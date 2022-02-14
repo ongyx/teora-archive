@@ -1,19 +1,21 @@
 package main
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/ongyx/teora"
 )
 
 func main() {
 	game := teora.NewGame()
 
-	ebiten.SetWindowSize(256, 256)
+	// ebiten.SetWindowSize(256, 256)
+	ebiten.SetFullscreen(true)
 	ebiten.SetWindowTitle("Teora")
 
 	if err := ebiten.RunGame(game); err != nil {
-		fmt.Errorf(err.Error())
+		log.Fatal(err)
 	}
 }

@@ -5,11 +5,8 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
-)
 
-const (
-	width  = 256
-	height = 256
+	"github.com/ongyx/teora/data"
 )
 
 type Game struct {
@@ -24,9 +21,12 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	text.Draw(screen, "Hello World!", TeoranStandard, 20, 40, color.White)
+	width, height := screen.Size()
+	x := width / 2
+	y := height / 2
+	text.Draw(screen, "Hello World!", data.TeoranStandard, x, y, color.White)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return width, height
+	return outsideWidth, outsideHeight
 }

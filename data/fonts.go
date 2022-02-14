@@ -1,4 +1,4 @@
-package teora
+package data
 
 import (
 	"log"
