@@ -3,5 +3,6 @@
 package data
 
 import (
+	// NOTE: currently all data is embedded into the final executable. Maybe store it somewhere else in the filesystem?
 	_ "github.com/hajimehoshi/file2byteslice"
 )

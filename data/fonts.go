@@ -15,6 +15,7 @@ const (
 )
 
 var (
+	// TeoranStandard is a special fontface that is used occasionally in teora.
 	TeoranStandard font.Face
 )
 
