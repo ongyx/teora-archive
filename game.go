@@ -1,14 +1,14 @@
 package teora
 
 import (
-	"image/color"
+	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
-
-	"github.com/ongyx/teora/data"
 )
 
-var teoran = NewFont(data.TeoranStandard, color.White)
+func scale(res int) int {
+	return int(float64(res) * ebiten.DeviceScaleFactor())
+}
 
 // Game holds the main state of the game.
 type Game struct {
@@ -26,10 +26,18 @@ func (g *Game) Update() error {
 
 // Draw draws to the screen based on the game's state.
 func (g *Game) Draw(screen *ebiten.Image) {
-	teoran.DrawCenter("Hello World!", screen, AlignCenter)
+	// draw tps at the top left of the screen
+	hack.Draw(
+		fmt.Sprintf("tps: %0.2f", ebiten.CurrentTPS()),
+		screen,
+		0, 0,
+		AlignRight|AlignBottom,
+	)
+
+	teoran.DrawCenter("Hello World!", screen)
 }
 
 // Layout returns the screen's size.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return outsideWidth, outsideHeight
+	return scale(outsideWidth), scale(outsideHeight)
 }

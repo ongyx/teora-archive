@@ -1,37 +1,22 @@
 import pathlib
-import string
 
 import fontforge
 import svgwrite
 from PIL import Image
 
-SPRITE_PATH = pathlib.Path("raw")
-SPRITE_PATH.mkdir(exist_ok=True)
-
-SPRITE_SIZE = 5
-SPRITE_OFFSET = SPRITE_SIZE + 1
-
-SPRITE_NAMES = string.ascii_letters + string.digits + "!?.,;/<>"
-
-SPRITESHEET = "teoran.png"
+SPRITE_PATH = pathlib.Path("./raw")
+SVG_PATH = pathlib.Path("./svg")
+SVG_PATH.mkdir(exist_ok=True)
 
 SVG_PIXEL_SIZE = 128
 SVG_PIXEL_SIZE_TUP = tuple([f"{SVG_PIXEL_SIZE}px"] * 2)
-
-SVG_SIZE_TUP = tuple([f"{SPRITE_SIZE * SVG_PIXEL_SIZE}px"] * 2)
 
 FONT_FAMILY = "Teoran"
 FONT_NAME = f"{FONT_FAMILY} Standard"
 
 
-def parse_sprites(spritesheet):
-    for y in range(0, spritesheet.height, SPRITE_OFFSET):
-        for x in range(0, spritesheet.width, SPRITE_OFFSET):
-            size = (x, y, x + SPRITE_SIZE, y + SPRITE_SIZE)
-            sprite = spritesheet.crop(size)
-
-            if sprite.getextrema()[3] != (0, 0):
-                yield sprite
+def svg_size(sprite):
+    return (str(sprite.width * SVG_PIXEL_SIZE), str(sprite.height * SVG_PIXEL_SIZE))
 
 
 def sprite2svg(sprite, svg):
@@ -55,15 +40,15 @@ def sprite2svg(sprite, svg):
 
 
 def main():
-    spritesheet = Image.open(SPRITESHEET)
-
     # stage 1: convert spritesheet to individual SVGs
-    for count, sprite in enumerate(parse_sprites(spritesheet)):
-        svg = svgwrite.Drawing(
-            filename=str(SPRITE_PATH / f"{count}.svg"), size=SVG_SIZE_TUP
-        )
-        sprite2svg(sprite, svg)
-        svg.save()
+    for file in SPRITE_PATH.iterdir():
+        if file.name.endswith(".png"):
+            sprite = Image.open(file)
+            svg = svgwrite.Drawing(
+                filename=str(SVG_PATH / f"{file.stem}.svg"), size=svg_size(sprite)
+            )
+            sprite2svg(sprite, svg)
+            svg.save()
 
     # stage 2: create a new font using fontforge and map the svgs
     font = fontforge.font()
@@ -75,13 +60,13 @@ def main():
     font.encoding = "UnicodeFull"
     font.em = 1000
 
-    for count, char in enumerate(SPRITE_NAMES):
-        glyph = font.createMappedChar(char)
-        glyph.importOutlines(str(SPRITE_PATH / f"{count}.svg"))
+    for file in SVG_PATH.iterdir():
+        glyph = font.createChar(int(file.stem, 16))
+        glyph.importOutlines(str(file))
 
     # Add glyph for spacebar
     space = font.createMappedChar(" ")
-    space.width = (SPRITE_SIZE * SVG_PIXEL_SIZE) // 2
+    space.width = (5 * SVG_PIXEL_SIZE) // 2
 
     font.generate("teoran.ttf")
     font.save("teoran.sfd")

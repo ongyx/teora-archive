@@ -1,4 +1,5 @@
 //go:generate file2byteslice -package=fonts -input=./fonts/teoran.ttf -output=./fonts/teoran.go -var=TeoranStandard
+//go:generate file2byteslice -package=fonts -input=./fonts/hack.ttf -output=./fonts/hack.go -var=Hack
 
 package data
 
