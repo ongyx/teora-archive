@@ -1,17 +1,29 @@
-GO=go
-MAIN=main/main.go
-BINARY=teora
-BINARY_DIR=build
+MAIN := main/main.go
+BUILD := build
+BINARY := $(BUILD)/teora
 
-.PHONY: all native windows data
+.PHONY: all data clean
 
-all: native windows
+all: release
+
+debug: native windows
+
+release: WFLAGS := -ldflags -H=windowsgui
+release: native windows
 
 native: data
-	$(GO) build -o $(BINARY_DIR)/$(BINARY) $(MAIN)
+	go build -o $(BINARY) $(MAIN)
 
+windows: export GOOS = windows
+windows: export GOARCH = amd64
+windows: export CGO_ENABLED = 1
+windows: export CC = x86_64-w64-mingw32-gcc
 windows: data
-	GOOS=windows GOARCH=amd64 CC=x86_64-w64-mingw32-gcc CGO_ENABLED=1 $(GO) build -ldflags -H=windowsgui -o $(BINARY_DIR)/$(BINARY).exe $(MAIN)
+	go build $(WFLAGS) -o $(BINARY).exe $(MAIN)
 
 data:
 	$(MAKE) -C data all
+
+clean:
+	rm -r $(BUILD)
+	$(MAKE) -C data clean

@@ -4,6 +4,7 @@ package teora
 
 import (
 	"image/color"
+	"log"
 
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
@@ -16,26 +17,30 @@ const (
 )
 
 var (
-	teoran = &Font{color: color.White}
-	hack   = &Font{color: color.White}
+	teoran = &Font{Color: color.White}
+	hack   = &Font{Color: color.White}
 )
 
 func init() {
-	teoran.Load(
+	if err := teoran.Load(
 		fonts.TeoranStandard,
 		&opentype.FaceOptions{
 			Size:    48,
 			DPI:     dpi,
 			Hinting: font.HintingFull,
 		},
-	)
+	); err != nil {
+		log.Fatal(err)
+	}
 
-	hack.Load(
+	if err := hack.Load(
 		fonts.Hack,
 		&opentype.FaceOptions{
 			Size:    24,
 			DPI:     dpi,
 			Hinting: font.HintingFull,
 		},
-	)
+	); err != nil {
+		log.Fatal(err)
+	}
 }
