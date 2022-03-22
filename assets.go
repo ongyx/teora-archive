@@ -5,12 +5,11 @@ package teora
 import (
 	"embed"
 	"image/color"
+	"io/fs"
 	"log"
 
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
-
-	"github.com/ongyx/teora/assets"
 )
 
 const (
@@ -18,12 +17,25 @@ const (
 )
 
 var (
+	//go:embed assets/fonts/*.ttf
+	assets embed.FS
+	fonts  fs.FS
+
 	teoran = &Font{Color: color.White}
 	hack   = &Font{Color: color.White}
 )
 
-func mustReadFile(fs embed.FS, name string) []byte {
-	data, err := fs.ReadFile(name)
+func init() {
+	var err error
+
+	fonts, err = fs.Sub(assets, "assets/fonts")
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func mustReadFile(fsys fs.FS, name string) []byte {
+	data, err := fs.ReadFile(fsys, name)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,7 +44,7 @@ func mustReadFile(fs embed.FS, name string) []byte {
 }
 
 func mustLoadFont(font *Font, name string, o *opentype.FaceOptions) {
-	data := mustReadFile(assets.Assets, name)
+	data := mustReadFile(fonts, name)
 	if err := font.Load(data, o); err != nil {
 		log.Fatal(err)
 	}
