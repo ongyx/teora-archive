@@ -18,5 +18,5 @@
 build/
 
 # Data that can be rebuilt/go generate files
-data/fonts/svg/
-data/fonts/*.go
+assets/fonts/svg/
+assets/fonts/*.go

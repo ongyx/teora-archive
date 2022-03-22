@@ -19,9 +19,36 @@ def svg_size(sprite):
     return (str(sprite.width * SVG_PIXEL_SIZE), str(sprite.height * SVG_PIXEL_SIZE))
 
 
+# crop any vertical borders around a sprite
+def crop(sprite):
+    columns = []
+
+    for x in range(sprite.width):
+        columns.append(
+            any(sprite.getpixel((x, y))[3] > 0 for y in range(sprite.height))
+        )
+
+    # find the sprite's bounds
+    start = None
+    end = None
+
+    for count, c in enumerate(columns):
+        if c and start is None:
+            start = count
+
+        if c:
+            end = count
+
+    # sanity check
+    # this really shouldn't happen
+    assert None not in (start, end)
+
+    return sprite.crop((start, 0, end + 1, sprite.height))
+
+
 def sprite2svg(sprite, svg):
-    for y in range(sprite.width):
-        for x in range(sprite.height):
+    for x in range(sprite.width):
+        for y in range(sprite.height):
             pixel = sprite.getpixel((x, y))
             alpha = pixel[3]
 
@@ -43,7 +70,9 @@ def main():
     # stage 1: convert spritesheet to individual SVGs
     for file in SPRITE_PATH.iterdir():
         if file.name.endswith(".png"):
+            print(f"{chr(int(file.stem, 16))} ({file.stem})")
             sprite = Image.open(file)
+            sprite = crop(sprite)
             svg = svgwrite.Drawing(
                 filename=str(SVG_PATH / f"{file.stem}.svg"), size=svg_size(sprite)
             )
