@@ -5,7 +5,13 @@ import (
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
+
+var msgs = []string{
+	"This is a demo build.",
+	"project teora is neither affiliated with nor endorsed by GeoEXE.",
+}
 
 func scale(res int) int {
 	return int(float64(res) * ebiten.DeviceScaleFactor())
@@ -14,7 +20,6 @@ func scale(res int) int {
 // Game holds the main state of the game.
 type Game struct {
 	scroll *Scroll
-	tick   int
 }
 
 // NewGame creates a game and initalises it's state.
@@ -26,7 +31,15 @@ func NewGame() *Game {
 
 // Update updates the game's state.
 func (g *Game) Update() error {
-	g.tick++
+	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+		// skip the text if it's still scrolling, otherwise go to the next text.
+		if !g.scroll.Done() {
+			g.scroll.Skip()
+		} else {
+			g.scroll.Next()
+		}
+	}
+
 	return nil
 }
 
@@ -40,15 +53,19 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		AlignRight|AlignBottom,
 	)
 
+	bounds := teoran.WriteCenter("Hello World!", screen)
+
 	// we can only init scroll here because we need to know the screen size
 	if g.scroll == nil {
-		cx, cy := screen.Size()
-		g.scroll = NewScroll(teoran, "Hello World!", cx/2, cy/2, AlignCenter)
+		g.scroll = NewScroll(
+			hack,
+			msgs,
+			image.Pt(center(screen).X, bounds.Max.Y+20),
+			AlignCenter,
+		)
 	}
 
-	g.scroll.Render(screen, (g.tick%2) == 0)
-
-	hack.Log("this is a log", screen)
+	g.scroll.Render(screen)
 }
 
 // Layout returns the screen's size.

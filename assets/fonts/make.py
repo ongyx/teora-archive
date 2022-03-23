@@ -70,7 +70,7 @@ def main():
     # stage 1: convert spritesheet to individual SVGs
     for file in SPRITE_PATH.iterdir():
         if file.name.endswith(".png"):
-            print(f"{chr(int(file.stem, 16))} ({file.stem})")
+            #print(f"{chr(int(file.stem, 16))} ({file.stem})")
             sprite = Image.open(file)
             sprite = crop(sprite)
             svg = svgwrite.Drawing(

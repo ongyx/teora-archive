@@ -28,28 +28,35 @@ const (
 type Align int
 
 // Has checks if the alignment flag is set.
-func (al Align) Has(flag Align) bool {
-	return (al & flag) != 0
+func (a Align) Has(flag Align) bool {
+	return (a & flag) != 0
 }
 
-// Adjust changes the values of x and y according to the text size,
+// Adjust changes the point according to the text size,
 // depending on the alignment flags set.
-func (al Align) Adjust(x, y *int, size image.Point) {
-	width := size.X
-	height := size.Y
+func (a Align) Adjust(point, size image.Point) image.Point {
 
-	// horizontal alignment
-	if al.Has(AlignHCenter) {
-		*x -= width / 2
-	} else if al.Has(AlignLeft) {
-		*x -= width
+	if a != AlignDefault {
+
+		w := size.X
+		h := size.Y
+
+		// horizonta alignment
+		if a.Has(AlignHCenter) {
+			point.X -= w / 2
+		} else if a.Has(AlignLeft) {
+			point.X -= w
+		}
+
+		// vertica alignment
+		// NOTE: The top left of the screen is (0, 0)!
+		if a.Has(AlignVCenter) {
+			point.Y += h / 2
+		} else if a.Has(AlignBottom) {
+			point.Y += h
+		}
+
 	}
 
-	// vertical alignment
-	// NOTE: The top left of the screen is (0, 0)!
-	if al.Has(AlignVCenter) {
-		*y += height / 2
-	} else if al.Has(AlignBottom) {
-		*y += height
-	}
+	return point
 }
