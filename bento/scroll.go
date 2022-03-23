@@ -1,6 +1,4 @@
-// Scroll provides text scrolling across a screen.
-
-package teora
+package bento
 
 import (
 	"image"

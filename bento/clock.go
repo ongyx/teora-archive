@@ -1,4 +1,4 @@
-package teora
+package bento
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"

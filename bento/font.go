@@ -1,4 +1,4 @@
-package teora
+package bento
 
 import (
 	"image"
@@ -13,7 +13,8 @@ import (
 
 const padding = 10
 
-func center(img *ebiten.Image) image.Point {
+// Center returns the approximate center coordinates of an image.
+func Center(img *ebiten.Image) image.Point {
 	p := image.Pt(img.Size())
 	p.X /= 2
 	p.Y /= 2
@@ -58,7 +59,7 @@ func (f *Font) Write(
 
 // WriteCenter renders the text in the center of an image.
 func (f *Font) WriteCenter(str string, img *ebiten.Image) image.Rectangle {
-	return f.Write(str, img, center(img), AlignCenter)
+	return f.Write(str, img, Center(img), AlignCenter)
 }
 
 // Load loads an OpenType fontface from a source.

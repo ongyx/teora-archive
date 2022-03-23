@@ -10,6 +10,8 @@ import (
 
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
+
+	"github.com/ongyx/teora/bento"
 )
 
 const (
@@ -21,8 +23,8 @@ var (
 	assets embed.FS
 	fonts  fs.FS
 
-	teoran = &Font{Color: color.White}
-	hack   = &Font{Color: color.White}
+	teoran = &bento.Font{Color: color.White}
+	hack   = &bento.Font{Color: color.White}
 )
 
 func init() {
@@ -43,7 +45,7 @@ func mustReadFile(fsys fs.FS, name string) []byte {
 	return data
 }
 
-func mustLoadFont(font *Font, name string, o *opentype.FaceOptions) {
+func mustLoadFont(font *bento.Font, name string, o *opentype.FaceOptions) {
 	data := mustReadFile(fonts, name)
 	if err := font.Load(data, o); err != nil {
 		log.Fatal(err)

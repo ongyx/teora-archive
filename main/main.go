@@ -10,13 +10,11 @@ import (
 )
 
 func main() {
-	game := teora.NewGame()
-
 	// ebiten.SetWindowSize(256, 256)
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowTitle("Teora")
 
-	if err := ebiten.RunGame(game); err != nil {
+	if err := ebiten.RunGame(teora.Game); err != nil {
 		log.Fatal(err)
 	}
 }
