@@ -4,7 +4,6 @@ package teora
 
 import (
 	"embed"
-	"image/color"
 	"io/fs"
 	"log"
 
@@ -23,8 +22,8 @@ var (
 	assets embed.FS
 	fonts  fs.FS
 
-	teoran = &bento.Font{Color: color.White}
-	hack   = &bento.Font{Color: color.White}
+	teoran = &bento.Font{}
+	hack   = &bento.Font{}
 )
 
 func init() {

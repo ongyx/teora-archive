@@ -2,37 +2,33 @@ package bento
 
 import (
 	"image"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text"
 )
 
-// Scroll allows several pieces of text to be scrolled across an image, starting from a point.
+// Scroll allows several pieces of text to be scrolled across an image.
 type Scroll struct {
-	Font  *Font
-	Text  []string
-	Point image.Point
-	Align Align
+	Font *Font
+	Text []string
 
-	index   int
-	textpos int
-	textend int
-	// the adjusted point
-	point image.Point
+	index    int
+	textpos  int
+	textend  int
+	textsize image.Point
 
 	clock Clock
 }
 
 // NewScroll creates a new scroll at a point on an image.
-func NewScroll(font *Font, tx []string, point image.Point, align Align) *Scroll {
+func NewScroll(font *Font, tx []string) *Scroll {
 	c := Clock{}
 	c.Schedule(0.05)
 
 	s := &Scroll{
 		Font:  font,
 		Text:  tx,
-		Point: point,
-		Align: align,
 		clock: c,
 	}
 	s.SetIndex(0)
@@ -60,7 +56,7 @@ func (s *Scroll) SetIndex(index int) {
 	s.index = index
 	s.textpos = 0
 	s.textend = len(t)
-	s.point = s.Align.Adjust(s.Point, size)
+	s.textsize = size
 }
 
 // Next changes to the next piece of text to scroll.
@@ -87,8 +83,13 @@ func (s *Scroll) Done() bool {
 	return s.textpos == s.textend
 }
 
-// Render renders the scroll onto an image and returns its current bounds.
-func (s *Scroll) Render(img *ebiten.Image) image.Rectangle {
+// Size returns the total size of the scroll.
+func (s *Scroll) Size() image.Point {
+	return s.textsize
+}
+
+// Render renders the scroll on a new image.
+func (s *Scroll) Render(clr color.Color) *ebiten.Image {
 	p := s.Text[s.index]
 
 	if s.textpos != s.textend {
@@ -101,5 +102,5 @@ func (s *Scroll) Render(img *ebiten.Image) image.Rectangle {
 
 	s.clock.Tick()
 
-	return s.Font.Draw(p, img, s.point)
+	return s.Font.Draw(p, clr)
 }

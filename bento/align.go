@@ -17,8 +17,8 @@ const (
 	AlignVCenter
 	// AlignBottom moves text below a point.
 	AlignBottom
-	// AlignDefault is the default alignment of text (to the right and above).
-	AlignDefault = AlignRight | AlignTop
+	// AlignDefault is the default alignment of text (to the right and below).
+	AlignDefault = AlignRight | AlignBottom
 	// AlignCenter horizontally and vertically centers text on a point.
 	AlignCenter = AlignHCenter | AlignVCenter
 )
@@ -41,19 +41,19 @@ func (a Align) Adjust(point, size image.Point) image.Point {
 		w := size.X
 		h := size.Y
 
-		// horizonta alignment
+		// horizontal alignment
 		if a.Has(AlignHCenter) {
 			point.X -= w / 2
 		} else if a.Has(AlignLeft) {
 			point.X -= w
 		}
 
-		// vertica alignment
+		// vertical alignment
 		// NOTE: The top left of the screen is (0, 0)!
 		if a.Has(AlignVCenter) {
-			point.Y += h / 2
-		} else if a.Has(AlignBottom) {
-			point.Y += h
+			point.Y -= h / 2
+		} else if a.Has(AlignTop) {
+			point.Y -= h
 		}
 
 	}
