@@ -4,5 +4,5 @@ import (
 	"github.com/ongyx/teora/bento"
 )
 
-// Game is the entrypoint.
-var Game = bento.NewGame()
+// Stage is the game entrypoint of teora.
+var Stage = bento.NewStage(introScene)

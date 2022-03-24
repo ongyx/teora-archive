@@ -14,7 +14,7 @@ func main() {
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowTitle("Teora")
 
-	if err := ebiten.RunGame(teora.Game); err != nil {
+	if err := ebiten.RunGame(teora.Stage); err != nil {
 		log.Fatal(err)
 	}
 }

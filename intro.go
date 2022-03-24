@@ -15,10 +15,7 @@ var msgs = []string{
 	"project teora is neither affiliated with nor endorsed by GeoEXE.",
 }
 
-func init() {
-	Game.Scenes["intro"] = &Intro{}
-	Game.SetScene("intro")
-}
+var introScene = &Intro{}
 
 // Intro is the splash/startup screen.
 type Intro struct {
@@ -26,7 +23,7 @@ type Intro struct {
 }
 
 // Update updates the scroll.
-func (i *Intro) Update() error {
+func (i *Intro) Update() (bento.Scene, error) {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		// skip the text if it's still scrolling, otherwise go to the next text.
 		if !i.scroll.Done() {
@@ -36,7 +33,7 @@ func (i *Intro) Update() error {
 		}
 	}
 
-	return nil
+	return nil, nil
 }
 
 // Render renders the intro sequence to the screen.
