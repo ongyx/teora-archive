@@ -3,18 +3,25 @@ package bento
 import (
 	"image"
 	"image/color"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-var empty *ebiten.Image
-
-func init() {
-	empty = ebiten.NewImage(1, 1)
-	empty.Fill(color.White)
+// Bound calculates the bounds of an image, given its top-left point and its size.
+func Bound(point, size image.Point) image.Rectangle {
+	return image.Rectangle{Min: point, Max: point.Add(size)}
 }
 
-// Rect draws a rectangle at point with size and color in an image.
+// Pad pads the bounds of an image by a fixed amount.
+func Pad(bounds image.Rectangle, pad image.Point) image.Rectangle {
+	return image.Rectangle{
+		Min: bounds.Min.Sub(pad),
+		Max: bounds.Max.Add(pad),
+	}
+}
+
+// Rect draws a rectangle at point with size and color.
 func Rect(
 	rect image.Rectangle,
 	clr color.Color,
@@ -28,4 +35,9 @@ func Rect(
 	op.ColorM.Apply(clr)
 
 	img.DrawImage(empty, op)
+}
+
+// Radian converts an angle in degrees to radians.
+func Radian(degree float64) float64 {
+	return degree * (math.Pi / 180)
 }

@@ -11,27 +11,25 @@ import (
 // Scroll allows several pieces of text to be scrolled across an image.
 type Scroll struct {
 	Font *Font
-	Text []string
 
-	index    int
-	textpos  int
-	textend  int
-	textsize image.Point
+	text  string
+	tpos  int
+	tend  int
+	tsize image.Point
 
 	clock Clock
 }
 
-// NewScroll creates a new scroll at a point on an image.
-func NewScroll(font *Font, tx []string) *Scroll {
+// NewScroll creates a new scroll.
+func NewScroll(font *Font, tx string) *Scroll {
 	c := Clock{}
 	c.Schedule(0.05)
 
 	s := &Scroll{
 		Font:  font,
-		Text:  tx,
 		clock: c,
 	}
-	s.SetIndex(0)
+	s.SetText(tx)
 
 	return s
 }
@@ -42,65 +40,53 @@ func (s *Scroll) Speed(secs float64) {
 	s.clock.Schedule(secs)
 }
 
-// Index gets the current index of the scroll.
-func (s *Scroll) Index() int {
-	return s.index
+// Text returns the current text in the scroll.
+func (s *Scroll) Text() string {
+	return s.text
 }
 
-// SetIndex changes the piece of text currently scrolling.
-// index must be a valid index in the scroll's list of text.
-func (s *Scroll) SetIndex(index int) {
-	t := s.Text[index]
-	size := text.BoundString(s.Font.Face, t).Size()
+// SetText changes the text currently scrolling.
+func (s *Scroll) SetText(tx string) {
+	size := text.BoundString(s.Font.Face, tx).Size()
 
-	s.index = index
-	s.textpos = 0
-	s.textend = len(t)
-	s.textsize = size
-}
-
-// Next changes to the next piece of text to scroll.
-func (s *Scroll) Next() {
-	if s.index != (len(s.Text) - 1) {
-		s.SetIndex(s.index + 1)
-	}
-}
-
-// Prev changes to the previous piece of text to scroll.
-func (s *Scroll) Prev() {
-	if s.index != 0 {
-		s.SetIndex(s.index - 1)
-	}
+	s.text = tx
+	s.tpos = 0
+	s.tend = len(tx)
+	s.tsize = size
 }
 
 // Skip causes the next render to render the whole text instead of waiting for scrolling.
 func (s *Scroll) Skip() {
-	s.textpos = s.textend
+	s.tpos = s.tend
 }
 
 // Done checks if the scrolling has finished.
 func (s *Scroll) Done() bool {
-	return s.textpos == s.textend
+	return s.tpos == s.tend
 }
 
 // Size returns the total size of the scroll.
 func (s *Scroll) Size() image.Point {
-	return s.textsize
+	return s.tsize
 }
 
 // Render renders the scroll on a new image.
-func (s *Scroll) Render(clr color.Color) *ebiten.Image {
-	p := s.Text[s.index]
+func (s *Scroll) Render(
+	clr color.Color,
+	point image.Point,
+	img *ebiten.Image,
+) {
+	t := s.text
 
-	if s.textpos != s.textend {
-		p = p[:s.textpos+1]
+	if s.tpos != s.tend {
+		t = t[:s.tpos+1]
 
 		if s.clock.Done() {
-			s.textpos++
+			s.tpos++
 		}
 	}
 
 	s.clock.Tick()
 
-	return s.Font.Draw(p, clr)
+	s.Font.Write(t, clr, img, point, Default)
 }

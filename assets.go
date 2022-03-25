@@ -4,7 +4,6 @@ package teora
 
 import (
 	"embed"
-	"io/fs"
 	"log"
 
 	"golang.org/x/image/font"
@@ -18,56 +17,38 @@ const (
 )
 
 var (
-	//go:embed assets/fonts/*.ttf
+	//go:embed assets/fonts/teoran.ttf
 	assets embed.FS
-	fonts  fs.FS
 
-	teoran = &bento.Font{}
+	// hack font
+	// NOTE: the hack font here is a special case because we need to load it before everything else.
+	//go:embed assets/fonts/hack.ttf
+	hackData []byte
+
 	hack   = &bento.Font{}
+	teoran = &bento.Font{}
 )
 
 func init() {
-	var err error
+	// hack
+	try(hack.Load(hackData, &opentype.FaceOptions{
+		Size:    24,
+		DPI:     dpi,
+		Hinting: font.HintingFull,
+	}))
 
-	fonts, err = fs.Sub(assets, "assets/fonts")
+	teoranData, err := assets.ReadFile("assets/fonts/teoran.ttf")
+	try(err)
+
+	try(teoran.Load(teoranData, &opentype.FaceOptions{
+		Size:    48,
+		DPI:     dpi,
+		Hinting: font.HintingFull,
+	}))
+}
+
+func try(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func mustReadFile(fsys fs.FS, name string) []byte {
-	data, err := fs.ReadFile(fsys, name)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return data
-}
-
-func mustLoadFont(font *bento.Font, name string, o *opentype.FaceOptions) {
-	data := mustReadFile(fonts, name)
-	if err := font.Load(data, o); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func init() {
-	mustLoadFont(
-		teoran,
-		"teoran.ttf",
-		&opentype.FaceOptions{
-			Size:    48,
-			DPI:     dpi,
-			Hinting: font.HintingFull,
-		},
-	)
-
-	mustLoadFont(
-		hack, "hack.ttf",
-		&opentype.FaceOptions{
-			Size:    24,
-			DPI:     dpi,
-			Hinting: font.HintingFull,
-		},
-	)
 }

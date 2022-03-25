@@ -6,35 +6,40 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
 	"github.com/ongyx/teora/bento"
 )
 
-var msgs = []string{
-	"This is a demo build.",
-	"project teora is neither affiliated with nor endorsed by GeoEXE.",
-}
+var (
+	IntroScene *Intro
+	IntroMsg   []string
+)
 
-var introScene = &Intro{}
+func init() {
+	IntroMsg = []string{"This project is neither affiliated with nor endorsed by GeoEXE."}
+
+	if Debug {
+		IntroMsg = append(IntroMsg, "Also, this is a devbuild. There may be a lot of bugs.")
+	}
+
+	IntroScene = &Intro{
+		scroll: NewScrollbox(
+			IntroMsg,
+			hack,
+		),
+	}
+}
 
 // Intro is the splash/startup screen.
 type Intro struct {
-	scroll *bento.Scroll // Scrollbox
+	scroll *Scrollbox
 }
 
 // Update updates the scroll.
-func (i *Intro) Update() (bento.Scene, error) {
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
-		// skip the text if it's still scrolling, otherwise go to the next text.
-		if !i.scroll.Done() {
-			i.scroll.Skip()
-		} else {
-			i.scroll.Next()
-		}
-	}
+func (i *Intro) Update(stage *bento.Stage) error {
+	i.scroll.Update()
 
-	return nil, nil
+	return nil
 }
 
 // Render renders the intro sequence to the screen.
@@ -45,31 +50,16 @@ func (i *Intro) Render(screen *ebiten.Image) {
 		color.White,
 		screen,
 		image.Pt(0, 0),
-		bento.AlignRight|bento.AlignBottom,
+		bento.Default,
 	)
 
-	bounds := teoran.WriteCenter("Hello World!", color.White, screen)
+	teoran.WriteCenter("Hello World!", color.White, screen)
 
-	// we can only init scroll here because we need to know the screen size
-	if i.scroll == nil {
-		/*
-			i.scroll = &Scrollbox{
-				Scroll: bento.NewScroll(hack, msgs),
-			}
-		*/
-		i.scroll = bento.NewScroll(hack, msgs)
+	b := screen.Bounds()
+	p := image.Point{
+		X: bento.Center.Point(b).X,
+		Y: int(float64(b.Dy()) * 0.9),
 	}
 
-	render := i.scroll.Render(color.White)
-
-	point := bento.AlignCenter.Adjust(
-		image.Pt(bento.Center(screen).X, bounds.Max.Y+40),
-		image.Pt(render.Size()),
-	)
-
-	// TODO: find a nicer way to set draw options?
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(point.X), float64(point.Y))
-
-	screen.DrawImage(render, op)
+	i.scroll.Render(p, screen)
 }

@@ -5,25 +5,36 @@ import (
 )
 
 const (
-	// AlignRight moves text to the right of a point.
-	AlignRight Align = 1 << iota
-	// AlignHCenter moves text to the horizontal center of a point.
-	AlignHCenter
-	// AlignLeft moves text to the left of a point.
-	AlignLeft
-	// AlignTop moves text above a point.
-	AlignTop
-	// AlignVCenter moves text to the vertical center of a point.
-	AlignVCenter
-	// AlignBottom moves text below a point.
-	AlignBottom
-	// AlignDefault is the default alignment of text (to the right and below).
-	AlignDefault = AlignRight | AlignBottom
-	// AlignCenter horizontally and vertically centers text on a point.
-	AlignCenter = AlignHCenter | AlignVCenter
+	// Right moves an image to the right of a point.
+	Right Align = 1 << iota
+	// HCenter moves an image to the horizontal center of a point.
+	HCenter
+	// Left moves an image to the left of a point.
+	Left
+	// Top moves an image above a point.
+	Top
+	// VCenter moves an image to the vertical center of a point.
+	VCenter
+	// Bottom moves an image below a point.
+	Bottom
+
+	// Default is the default alignment of an image (to the right and below).
+	Default = Bottom | Right
+
+	TopLeft   = Top | Left
+	TopCenter = Top | HCenter
+	TopRight  = Top | Right
+
+	CenterLeft  = VCenter | Left
+	Center      = VCenter | HCenter
+	CenterRight = VCenter | Right
+
+	BottomLeft   = Bottom | Left
+	BottomCenter = Bottom | Center
+	BottomRight  = Bottom | Right
 )
 
-// Align specifies the alignment to render text at a point (x, y).
+// Align specifies the alignment to render an image at a point (x, y).
 // Align must have at most one horizontal (AlignRight, AlignHCenter, AlignLeft) and vertical (AlignTop, AlignVCenter, AlignBottom) flag.
 type Align int
 
@@ -32,31 +43,54 @@ func (a Align) Has(flag Align) bool {
 	return (a & flag) != 0
 }
 
-// Adjust changes the point according to the text size,
-// depending on the alignment flags set.
+// Adjust aligns the point so that it will be the top-left point of an image given its size.
+// The adjusted point can then be passed to ebiten.Image.DrawImage so the image will be in the correct position.
 func (a Align) Adjust(point, size image.Point) image.Point {
 
-	if a != AlignDefault {
+	if a != Default {
 
 		w := size.X
 		h := size.Y
 
 		// horizontal alignment
-		if a.Has(AlignHCenter) {
+		if a.Has(HCenter) {
 			point.X -= w / 2
-		} else if a.Has(AlignLeft) {
+		} else if a.Has(Left) {
 			point.X -= w
 		}
 
 		// vertical alignment
 		// NOTE: The top left of the screen is (0, 0)!
-		if a.Has(AlignVCenter) {
+		if a.Has(VCenter) {
 			point.Y -= h / 2
-		} else if a.Has(AlignTop) {
+		} else if a.Has(Top) {
 			point.Y -= h
 		}
 
 	}
 
 	return point
+}
+
+// Point calculates a point in the bounds of an image.
+func (a Align) Point(bounds image.Rectangle) image.Point {
+	// top-left point
+	p := bounds.Min
+
+	w := bounds.Dx()
+	h := bounds.Dy()
+
+	if a.Has(Right) {
+		p.X += w
+	} else if a.Has(HCenter) {
+		p.X += w / 2
+	}
+
+	if a.Has(VCenter) {
+		p.Y += h / 2
+	} else if a.Has(Bottom) {
+		p.Y += h
+	}
+
+	return p
 }

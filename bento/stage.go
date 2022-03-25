@@ -11,20 +11,15 @@ type Stage struct {
 }
 
 // NewStage creates a stage with an inital scene.
-func NewStage(inital Scene) *Stage {
+func NewStage(initial Scene) *Stage {
 	return &Stage{
-		Current: inital,
+		Current: initial,
 	}
 }
 
 // Update updates the current scene's state.
 func (s *Stage) Update() error {
-	next, err := s.Current.Update()
-	if next != nil {
-		s.Current = next
-	}
-
-	return err
+	return s.Current.Update(s)
 }
 
 // Draw renders the current scene to the screen.
@@ -34,9 +29,9 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 // Layout returns the screen's size.
 func (s *Stage) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return scale(outsideWidth), scale(outsideHeight)
+	return dpiscale(outsideWidth), dpiscale(outsideHeight)
 }
 
-func scale(res int) int {
+func dpiscale(res int) int {
 	return int(float64(res) * ebiten.DeviceScaleFactor())
 }
