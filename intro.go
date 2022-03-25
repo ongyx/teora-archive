@@ -1,7 +1,6 @@
 package teora
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 
@@ -25,7 +24,7 @@ func init() {
 	IntroScene = &Intro{
 		scroll: NewScrollbox(
 			IntroMsg,
-			hack,
+			Hack,
 		),
 	}
 }
@@ -44,15 +43,6 @@ func (i *Intro) Update(stage *bento.Stage) error {
 
 // Render renders the intro sequence to the screen.
 func (i *Intro) Render(screen *ebiten.Image) {
-	// draw tps/fps at the top left of the screen
-	hack.Write(
-		fmt.Sprintf("tps: %0.2f", ebiten.CurrentTPS()),
-		color.White,
-		screen,
-		image.Pt(0, 0),
-		bento.Default,
-	)
-
 	teoran.WriteCenter("Hello World!", color.White, screen)
 
 	b := screen.Bounds()

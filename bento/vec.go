@@ -72,8 +72,7 @@ func (vec *Vec) Arc(center image.Point, radius int, from, to float32) {
 	vec.Path.Arc(cx, cy, float32(radius), from, to, vector.CounterClockwise)
 }
 
-// Draw renders this vector path with color to an image.
-func (vec *Vec) Draw(clr color.Color, img *ebiten.Image) {
+func (vec *Vec) draw(clr color.Color) ([]ebiten.Vertex, []uint16) {
 	r, g, b, a := clr.RGBA()
 	nr := float32(r) / 0xFF
 	ng := float32(g) / 0xFF
@@ -91,6 +90,28 @@ func (vec *Vec) Draw(clr color.Color, img *ebiten.Image) {
 		v.ColorA = na
 	}
 
-	op := &ebiten.DrawTrianglesOptions{FillRule: ebiten.EvenOdd}
-	img.DrawTriangles(vs, is, empty, op)
+	return vs, is
+}
+
+// Draw renders this vector path with color to an image.
+func (vec *Vec) Draw(
+	clr color.Color,
+	img *ebiten.Image,
+	o *ebiten.DrawTrianglesOptions,
+) {
+	vs, is := vec.draw(clr)
+
+	img.DrawTriangles(vs, is, empty, o)
+}
+
+// DrawShader renders this vector path with a shader to an image.
+func (vec *Vec) DrawShader(
+	clr color.Color,
+	img *ebiten.Image,
+	shader *ebiten.Shader,
+	o *ebiten.DrawTrianglesShaderOptions,
+) {
+	vs, is := vec.draw(clr)
+
+	img.DrawTrianglesShader(vs, is, shader, o)
 }

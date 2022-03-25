@@ -10,6 +10,9 @@ import (
 	"github.com/ongyx/teora/bento"
 )
 
+// TODO: add gradient?
+var sbColor = color.NRGBA{250, 250, 250, 255}
+
 // Scrollbox is a box with scrolling text inside.
 // Point is the center of the scrollbox.
 type Scrollbox struct {
@@ -69,11 +72,13 @@ func (sb *Scrollbox) Render(point image.Point, img *ebiten.Image) {
 	vec.Arc(bento.CenterRight.Point(pb), r, bento.Deg90, bento.Deg270)
 	vec.Arc(bento.CenterLeft.Point(pb), r, bento.Deg270, bento.Deg90)
 
-	vec.Draw(color.White, img)
+	vec.Draw(sbColor, img, nil)
+	//vec.DrawShader(color.White, img, gradient, nil)
 
 	// align scroll to the left edge and vertically center of the scrollbox.
 	sp := bento.CenterLeft.Point(b)
 	asp := bento.CenterRight.Adjust(sp, sb.Scroll.Size())
 
+	// render scroll text
 	sb.Scroll.Render(color.Black, asp, img)
 }

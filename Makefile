@@ -14,14 +14,14 @@ release: WFLAGS := -ldflags -H=windowsgui
 release: native windows
 
 native:
-	go build -tags $(TAGS) -o $(BINARY) $(MAIN)
+	go build -o $(BINARY) -tags=$(TAGS) $(MAIN)
 
 windows: export GOOS = windows
 windows: export GOARCH = amd64
 windows: export CGO_ENABLED = 1
 windows: export CC = x86_64-w64-mingw32-gcc
 windows:
-	go build $(WFLAGS) -tags $(TAGS) -o $(BINARY).exe $(MAIN)
+	go build -o $(BINARY).exe -tags=$(TAGS) $(WFLAGS) $(MAIN)
 
 assets:
 	$(MAKE) -C assets all

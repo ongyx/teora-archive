@@ -12,6 +12,7 @@ import (
 
 func main() {
 	stage := bento.NewStage(teora.IntroScene)
+	stage.Debug(teora.Debug, teora.Hack)
 
 	// ebiten.SetWindowSize(256, 256)
 	ebiten.SetFullscreen(true)

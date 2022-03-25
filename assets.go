@@ -9,6 +9,8 @@ import (
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"github.com/ongyx/teora/bento"
 )
 
@@ -18,6 +20,7 @@ const (
 
 var (
 	//go:embed assets/fonts/teoran.ttf
+	//go:embed assets/shaders/*.go
 	assets embed.FS
 
 	// hack font
@@ -25,14 +28,16 @@ var (
 	//go:embed assets/fonts/hack.ttf
 	hackData []byte
 
-	hack   = &bento.Font{}
+	Hack   = &bento.Font{}
 	teoran = &bento.Font{}
+
+	gradient *ebiten.Shader
 )
 
 func init() {
 	// hack
-	try(hack.Load(hackData, &opentype.FaceOptions{
-		Size:    24,
+	try(Hack.Load(hackData, &opentype.FaceOptions{
+		Size:    20,
 		DPI:     dpi,
 		Hinting: font.HintingFull,
 	}))
@@ -45,6 +50,12 @@ func init() {
 		DPI:     dpi,
 		Hinting: font.HintingFull,
 	}))
+
+	gradientCode, err := assets.ReadFile("assets/shaders/gradient.go")
+	try(err)
+
+	gradient, err = ebiten.NewShader(gradientCode)
+	try(err)
 }
 
 func try(err error) {
