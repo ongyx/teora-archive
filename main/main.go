@@ -12,7 +12,13 @@ import (
 
 func main() {
 	stage := bento.NewStage(teora.IntroScene)
-	stage.Debug(teora.Debug, teora.Hack)
+
+	if teora.Debug {
+		stage.Debug = &bento.DebugOptions{
+			Font:    teora.Hack,
+			ShowTPS: true,
+		}
+	}
 
 	// ebiten.SetWindowSize(256, 256)
 	ebiten.SetFullscreen(true)

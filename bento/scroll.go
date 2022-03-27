@@ -17,17 +17,14 @@ type Scroll struct {
 	tend  int
 	tsize image.Point
 
-	clock Clock
+	clock *Clock
 }
 
 // NewScroll creates a new scroll.
 func NewScroll(font *Font, tx string) *Scroll {
-	c := Clock{}
-	c.Schedule(0.05)
-
 	s := &Scroll{
 		Font:  font,
-		clock: c,
+		clock: NewClock(0.05),
 	}
 	s.SetText(tx)
 

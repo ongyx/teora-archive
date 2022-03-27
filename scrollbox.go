@@ -5,42 +5,46 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
 	"github.com/ongyx/teora/bento"
 )
 
-// TODO: add gradient?
-var sbColor = color.NRGBA{250, 250, 250, 255}
+var (
+	// TODO: add gradient?
+	sbColor = color.NRGBA{250, 250, 250, 255}
+
+	confirmKeys = []ebiten.Key{ebiten.KeyEnter, ebiten.KeySpace}
+)
 
 // Scrollbox is a box with scrolling text inside.
 // Point is the center of the scrollbox.
 type Scrollbox struct {
-	*bento.Scroll
-
-	msg   []string
-	index int
-	size  *image.Point
+	scroll *bento.Scroll
+	msg    []string
+	msglen int
+	index  int
+	size   *image.Point
 }
 
 // NewScrollbox creates a new scrollbox, where msg are the texts to scroll.
 func NewScrollbox(msg []string, font *bento.Font) *Scrollbox {
 	return &Scrollbox{
-		Scroll: bento.NewScroll(font, msg[0]),
+		scroll: bento.NewScroll(font, msg[0]),
 		msg:    msg,
+		msglen: len(msg),
 	}
 }
 
 // Update updates the scrollbox's state.
 func (sb *Scrollbox) Update() {
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+	if bento.Keypress(confirmKeys) {
 		// skip the text if it's still scrolling, otherwise go to the next text.
-		if !sb.Done() {
-			sb.Skip()
+		if !sb.scroll.Done() {
+			sb.scroll.Skip()
 		} else {
 			sb.index++
 			if sb.index < len(sb.msg) {
-				sb.SetText(sb.msg[sb.index])
+				sb.scroll.SetText(sb.msg[sb.index])
 			}
 		}
 	}
@@ -77,8 +81,13 @@ func (sb *Scrollbox) Render(point image.Point, img *ebiten.Image) {
 
 	// align scroll to the left edge and vertically center of the scrollbox.
 	sp := bento.CenterLeft.Point(b)
-	asp := bento.CenterRight.Adjust(sp, sb.Scroll.Size())
+	asp := bento.CenterRight.Adjust(sp, sb.scroll.Size())
 
 	// render scroll text
-	sb.Scroll.Render(color.Black, asp, img)
+	sb.scroll.Render(color.Black, asp, img)
+}
+
+// Done checks if the scrollbox has finished scrolling all text.
+func (sb *Scrollbox) Done() bool {
+	return sb.scroll.Done() && sb.index == sb.msglen
 }
