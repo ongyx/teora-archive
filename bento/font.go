@@ -18,8 +18,19 @@ type Font struct {
 	Face font.Face
 }
 
+// Draw renders the text on an image at the point as-is (i.e without any alignment).
+// NOTE: point is the bottom-left point of the text.
+func (f *Font) Draw(
+	str string,
+	clr color.Color,
+	img *ebiten.Image,
+	point image.Point,
+) {
+	text.Draw(img, str, f.Face, point.X, point.Y, clr)
+}
+
 // Write renders the text on an image at the point with alignment and returns its bounds.
-// NOTE: point is the top-left point of the text.
+// point is the top-left point of the text.
 func (f *Font) Write(
 	str string,
 	clr color.Color,
@@ -28,11 +39,10 @@ func (f *Font) Write(
 	align Align,
 ) image.Rectangle {
 	s := text.BoundString(f.Face, str).Size()
-	a := align.Adjust(point, s)
+	a := align.Align(point, s)
 
-	// NOTE: ebiten's text module treats the point as the bottom-left bound of the text drawn,
-	// so we have to shift the y point here.
-	text.Draw(img, str, f.Face, a.X, a.Y+s.Y, clr)
+	// adjust Y axis because we need the bottom-left point, not the top-left point.
+	f.Draw(str, clr, img, a.Add(image.Pt(0, s.Y)))
 
 	return image.Rectangle{
 		Min: a,

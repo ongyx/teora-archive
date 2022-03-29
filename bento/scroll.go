@@ -68,6 +68,7 @@ func (s *Scroll) Size() image.Point {
 }
 
 // Render renders the scroll on a new image.
+// point is the bottom-left point of the scroll.
 func (s *Scroll) Render(
 	clr color.Color,
 	point image.Point,
@@ -85,5 +86,5 @@ func (s *Scroll) Render(
 
 	s.clock.Tick()
 
-	s.Font.Write(t, clr, img, point, Default)
+	s.Font.Draw(t, clr, img, point)
 }

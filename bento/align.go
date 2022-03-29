@@ -19,7 +19,7 @@ const (
 	Bottom
 
 	// Default is the default alignment of an image (to the right and below).
-	Default = Bottom | Right
+	Default = BottomRight
 
 	TopLeft   = Top | Left
 	TopCenter = Top | HCenter
@@ -43,30 +43,27 @@ func (a Align) Has(flag Align) bool {
 	return (a & flag) != 0
 }
 
-// Adjust aligns the point so that it will be the top-left point of an image given its size.
+// Align adjusts the point so that it will be the top-left point of an image given its size.
 // The adjusted point can then be passed to ebiten.Image.DrawImage so the image will be in the correct position.
-func (a Align) Adjust(point, size image.Point) image.Point {
-
+func (a Align) Align(point, size image.Point) image.Point {
 	if a != Default {
-
 		w := size.X
 		h := size.Y
 
-		// horizontal alignment
+		// horizontal
 		if a.Has(HCenter) {
 			point.X -= w / 2
 		} else if a.Has(Left) {
 			point.X -= w
 		}
 
-		// vertical alignment
+		// vertical
 		// NOTE: The top left of the screen is (0, 0)!
 		if a.Has(VCenter) {
 			point.Y -= h / 2
 		} else if a.Has(Top) {
 			point.Y -= h
 		}
-
 	}
 
 	return point

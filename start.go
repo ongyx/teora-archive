@@ -35,7 +35,7 @@ func (s *Start) Render(screen *ebiten.Image) {
 
 	s.subtitle.Render(
 		color.White,
-		bento.Center.Adjust(
+		bento.Center.Align(
 			image.Point{
 				X: bento.Center.Point(b).X,
 				Y: int(float64(b.Dy()) * 0.75),
