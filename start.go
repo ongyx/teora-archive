@@ -24,6 +24,10 @@ type Start struct {
 	subtitle *bento.Scroll
 }
 
+func (s *Start) Init(screen *ebiten.Image) {
+
+}
+
 func (s *Start) Update(stage *bento.Stage) error {
 	return nil
 }

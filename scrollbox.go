@@ -17,59 +17,64 @@ var (
 )
 
 // Scrollbox is a box with scrolling text inside.
-// Point is the center of the scrollbox.
 type Scrollbox struct {
-	scroll *bento.Scroll
-	// The inital height of the scroll.
-	scrollh int
+	scroll    *bento.Scroll
+	size, pos image.Point
+	bound     image.Rectangle
 
-	msg    []string
-	msglen int
-	index  int
-	size   *image.Point
+	stream bento.Stream
+	done   bool
 }
 
-// NewScrollbox creates a new scrollbox, where msg are the texts to scroll.
-func NewScrollbox(msg []string, font *bento.Font) *Scrollbox {
-	s := bento.NewScroll(font, msg[0])
+// NewScrollbox creates a new scrollbox from a stream.
+func NewScrollbox(stream bento.Stream, font *bento.Font) *Scrollbox {
+	s := bento.NewScroll(font, *stream.Read())
 
 	return &Scrollbox{
-		scroll:  s,
-		scrollh: s.Size().Y,
-		msg:     msg,
-		msglen:  len(msg),
+		scroll: s,
+		// the initial size of the scroll
+		size:   s.Size(),
+		stream: stream,
 	}
 }
 
-// Update updates the scrollbox's state.
+func (sb *Scrollbox) Init(img *ebiten.Image) {
+	b := img.Bounds()
+	p := image.Point{
+		X: bento.Center.Point(b).X,
+		Y: int(float64(b.Dy()) * 0.9),
+	}
+
+	// initalise size relative to the screen's size.
+	s := image.Pt(b.Dx()/2, b.Dy()/16)
+	ap := bento.Center.Align(p, s)
+
+	sb.bound = bento.Bound(ap, s)
+
+	// align scroll to the left edge and vertically center of the scrollbox.
+	sb.pos = bento.CenterLeft.Point(sb.bound)
+	// adjust y manually so the text doesn't jitter becuase of changing height.
+	sb.pos.Y += sb.size.Y / 2
+}
+
 func (sb *Scrollbox) Update() {
 	if bento.Keypress(confirmKeys) {
 		// skip the text if it's still scrolling, otherwise go to the next text.
 		if !sb.scroll.Done() {
 			sb.scroll.Skip()
 		} else {
-			sb.index++
-			if sb.index < len(sb.msg) {
-				sb.scroll.SetText(sb.msg[sb.index])
+			if t := sb.stream.Read(); t != nil {
+				sb.scroll.SetText(*t)
+			} else {
+				sb.done = true
 			}
 		}
 	}
 }
 
-// Render renders the scrollbox onto a image.
-// point is the center point of the scrollbox.
-func (sb *Scrollbox) Render(point image.Point, img *ebiten.Image) {
-	if sb.size == nil {
-		// initalise size relative to the screen's size.
-		w, h := img.Size()
-		sb.size = &image.Point{X: w / 2, Y: h / 16}
-	}
-
-	p := bento.Center.Align(point, *sb.size)
-
+func (sb *Scrollbox) Render(img *ebiten.Image) {
 	// draw the background of the scrollbox.
-	b := bento.Bound(p, *sb.size)
-	pb := bento.Pad(b, image.Pt(10, 10))
+	pb := bento.Pad(sb.bound, image.Pt(10, 10))
 
 	r := pb.Dy() / 2
 
@@ -85,16 +90,11 @@ func (sb *Scrollbox) Render(point image.Point, img *ebiten.Image) {
 	vec.Draw(sbColor, img, nil)
 	//vec.DrawShader(color.White, img, gradient, nil)
 
-	// align scroll to the left edge and vertically center of the scrollbox.
-	sp := bento.CenterLeft.Point(b)
-	// adjust y manually so the text doesn't jitter becuase of changing height.
-	sp.Y += sb.scrollh / 2
-
 	// render scroll text
-	sb.scroll.Render(color.Black, sp, img)
+	sb.scroll.Render(color.Black, sb.pos, img)
 }
 
 // Done checks if the scrollbox has finished scrolling all text.
 func (sb *Scrollbox) Done() bool {
-	return sb.scroll.Done() && sb.index == sb.msglen
+	return sb.scroll.Done() && sb.done
 }
