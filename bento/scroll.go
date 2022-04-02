@@ -67,9 +67,9 @@ func (s *Scroll) Size() image.Point {
 	return s.tsize
 }
 
-// Render renders the scroll on a new image.
+// Draw renders the scroll on a new image.
 // point is the bottom-left point of the scroll.
-func (s *Scroll) Render(
+func (s *Scroll) Draw(
 	clr color.Color,
 	point image.Point,
 	img *ebiten.Image,

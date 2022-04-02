@@ -11,8 +11,8 @@ type Scene interface {
 	Init(screen *ebiten.Image)
 	// Update updates the state of the scene, if any.
 	Update(stage *Stage) error
-	// Render renders any sprites/animations on screen.
-	Render(screen *ebiten.Image)
+	// Draw renders any sprites/animations on screen.
+	Draw(screen *ebiten.Image)
 	// Enter returns the enter transition of the scene, if any.
 	Enter() Transition
 	// Exit returns the enter transition of the scene, if any.

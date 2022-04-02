@@ -55,8 +55,8 @@ func (i *Intro) Update(stage *bento.Stage) error {
 	return nil
 }
 
-func (i *Intro) Render(screen *ebiten.Image) {
-	i.scroll.Render(screen)
+func (i *Intro) Draw(screen *ebiten.Image) {
+	i.scroll.Draw(screen)
 }
 
 func (i *Intro) Enter() bento.Transition {

@@ -32,12 +32,12 @@ func (s *Start) Update(stage *bento.Stage) error {
 	return nil
 }
 
-func (s *Start) Render(screen *ebiten.Image) {
+func (s *Start) Draw(screen *ebiten.Image) {
 	teoran.WriteCenter("teora", color.White, screen)
 
 	b := screen.Bounds()
 
-	s.subtitle.Render(
+	s.subtitle.Draw(
 		color.White,
 		bento.Center.Align(
 			image.Point{

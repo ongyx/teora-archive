@@ -67,7 +67,7 @@ func (f *Fade) Update() error {
 	return nil
 }
 
-func (f *Fade) Render(screen *ebiten.Image) {
+func (f *Fade) Draw(screen *ebiten.Image) {
 	if f.overlay == nil {
 		f.overlay = ebiten.NewImage(screen.Size())
 	}

@@ -6,8 +6,8 @@ import "github.com/hajimehoshi/ebiten/v2"
 type Transition interface {
 	// Update updates the state of the transition.
 	Update() error
-	// Render renders the transition to the screen.
-	Render(screen *ebiten.Image)
+	// Draw renders the transition to the screen.
+	Draw(screen *ebiten.Image)
 	// Done checks if the transition's animation has finished.
 	Done() bool
 }

@@ -72,7 +72,7 @@ func (sb *Scrollbox) Update() {
 	}
 }
 
-func (sb *Scrollbox) Render(img *ebiten.Image) {
+func (sb *Scrollbox) Draw(img *ebiten.Image) {
 	// draw the background of the scrollbox.
 	pb := bento.Pad(sb.bound, image.Pt(10, 10))
 
@@ -91,7 +91,7 @@ func (sb *Scrollbox) Render(img *ebiten.Image) {
 	//vec.DrawShader(color.White, img, gradient, nil)
 
 	// render scroll text
-	sb.scroll.Render(color.Black, sb.pos, img)
+	sb.scroll.Draw(color.Black, sb.pos, img)
 }
 
 // Done checks if the scrollbox has finished scrolling all text.

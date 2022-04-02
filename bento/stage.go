@@ -103,13 +103,13 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 	// render the scene only if we aren't exiting
 	if s.state != Exiting {
 		s.snapshot.Clear()
-		s.scene.Render(s.snapshot)
+		s.scene.Draw(s.snapshot)
 	}
 
 	screen.DrawImage(s.snapshot, nil)
 
 	if t := s.transition(); t != nil {
-		t.Render(screen)
+		t.Draw(screen)
 
 		if t.Done() {
 			// transition finished, change rendering state
