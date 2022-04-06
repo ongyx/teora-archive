@@ -9,24 +9,10 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const (
-	// Normal means the stage is rendering the current scene (default state).
-	Normal StageState = iota
-	// Entering means the stage is rendering a enter transition.
-	Entering
-	// Exiting means the stage is rendering a exit transition.
-	Exiting
-)
-
-// StageState represents the rendering state of the stage.
-type StageState int
-
 // DebugOptions are options for debug mode.
 // A font is required to render certain elements.
-// If ShowTPS is true, the current TPS is shown on the top-left of the screen.
 type DebugOptions struct {
-	Font    *Font
-	ShowTPS bool
+	Font *Font
 }
 
 // Stage is a scene manager which implements the ebiten.Game interface.
@@ -43,7 +29,7 @@ type Stage struct {
 	snapshot *ebiten.Image
 
 	enter, exit Transition
-	state       StageState
+	state       RenderState
 }
 
 // NewStage creates a stage with an inital scene.
@@ -80,6 +66,11 @@ func (s *Stage) Update() error {
 	}
 
 	if s.state != Exiting {
+		for _, e := range s.scene.Entities() {
+			if err := e.update(); err != nil {
+				return err
+			}
+		}
 		if err := s.scene.Update(s); err != nil {
 			return err
 		}
@@ -96,14 +87,17 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 	// initalize scene
 	if !s.init {
-		s.scene.Init(screen)
+		s.scene.Init(screen.Bounds().Size())
 		s.init = true
 	}
 
 	// render the scene only if we aren't exiting
 	if s.state != Exiting {
 		s.snapshot.Clear()
-		s.scene.Draw(s.snapshot)
+		for _, e := range s.scene.Entities() {
+			e.draw(screen)
+		}
+		s.scene.Draw(screen)
 	}
 
 	screen.DrawImage(s.snapshot, nil)
@@ -139,7 +133,7 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 // Layout returns the screen's size.
 func (s *Stage) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return dpiscale(outsideWidth), dpiscale(outsideHeight)
+	return DPIScale(outsideWidth), DPIScale(outsideHeight)
 }
 
 func (s *Stage) transition() Transition {
@@ -153,8 +147,4 @@ func (s *Stage) transition() Transition {
 	}
 
 	return t
-}
-
-func dpiscale(res int) int {
-	return int(float64(res) * ebiten.DeviceScaleFactor())
 }

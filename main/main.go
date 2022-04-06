@@ -14,10 +14,7 @@ func main() {
 	stage := bento.NewStage(teora.IntroScene)
 
 	if teora.Debug {
-		stage.Debug = &bento.DebugOptions{
-			Font:    teora.Hack,
-			ShowTPS: true,
-		}
+		stage.Debug = &bento.DebugOptions{Font: teora.Hack}
 	}
 
 	// ebiten.SetWindowSize(256, 256)

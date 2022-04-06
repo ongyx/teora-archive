@@ -72,6 +72,11 @@ func (vec *Vec) Arc(center image.Point, radius int, from, to float32) {
 	vec.Path.Arc(cx, cy, float32(radius), from, to, vector.CounterClockwise)
 }
 
+// Circle draws a circle with a center and radius.
+func (vec *Vec) Circle(center image.Point, radius int) {
+	vec.Arc(center, radius, 0, 2*math.Pi)
+}
+
 func (vec *Vec) draw(clr color.Color) ([]ebiten.Vertex, []uint16) {
 	r, g, b, a := clr.RGBA()
 	nr := float32(r) / 0xFF

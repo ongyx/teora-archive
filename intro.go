@@ -1,6 +1,7 @@
 package teora
 
 import (
+	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -23,31 +24,23 @@ func init() {
 		}
 	})
 
+	sb := NewScrollbox(s, Hack)
+
 	IntroScene = &Intro{
-		scroll: NewScrollbox(s, Hack),
+		scroll:  sb,
+		entites: bento.NewEntitySlice(sb),
 	}
-}
-
-type msg struct {
-	text string
-}
-
-func (m msg) String() string {
-	return m.text
 }
 
 // Intro is the splash/startup screen.
 type Intro struct {
-	scroll *Scrollbox
+	scroll  *Scrollbox
+	entites []*bento.Entity
 }
 
-func (i *Intro) Init(screen *ebiten.Image) {
-	i.scroll.Init(screen)
-}
+func (i *Intro) Init(size image.Point) {}
 
 func (i *Intro) Update(stage *bento.Stage) error {
-	i.scroll.Update()
-
 	if i.scroll.Done() && bento.Keypress(confirmKeys) {
 		stage.Change(StartScene)
 	}
@@ -55,14 +48,16 @@ func (i *Intro) Update(stage *bento.Stage) error {
 	return nil
 }
 
-func (i *Intro) Draw(screen *ebiten.Image) {
-	i.scroll.Draw(screen)
+func (i *Intro) Draw(screen *ebiten.Image) {}
+
+func (i *Intro) Entities() []*bento.Entity {
+	return i.entites
 }
 
 func (i *Intro) Enter() bento.Transition {
-	return anim.NewFade(true, color.Black, 1)
+	return anim.NewFade(true, color.Black, 0.5)
 }
 
 func (i *Intro) Exit() bento.Transition {
-	return anim.NewFade(false, color.Black, 1)
+	return anim.NewFade(false, color.Black, 0.5)
 }

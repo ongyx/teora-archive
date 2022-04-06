@@ -1,6 +1,7 @@
 package teora
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 
@@ -12,6 +13,7 @@ import (
 var (
 	// TODO: add gradient?
 	sbColor = color.NRGBA{250, 250, 250, 255}
+	sbPad   = image.Pt(10, 10)
 
 	confirmKeys = []ebiten.Key{ebiten.KeyEnter, ebiten.KeySpace}
 )
@@ -19,8 +21,10 @@ var (
 // Scrollbox is a box with scrolling text inside.
 type Scrollbox struct {
 	scroll    *bento.Scroll
-	size, pos image.Point
-	bound     image.Rectangle
+	scrollpos image.Point
+
+	rect   image.Rectangle
+	canvas *ebiten.Image
 
 	stream bento.Stream
 	done   bool
@@ -32,32 +36,35 @@ func NewScrollbox(stream bento.Stream, font *bento.Font) *Scrollbox {
 
 	return &Scrollbox{
 		scroll: s,
-		// the initial size of the scroll
-		size:   s.Size(),
 		stream: stream,
 	}
 }
 
-func (sb *Scrollbox) Init(img *ebiten.Image) {
-	b := img.Bounds()
-	p := image.Point{
-		X: bento.Center.Point(b).X,
-		Y: int(float64(b.Dy()) * 0.9),
-	}
+func (sb *Scrollbox) Init(entity *bento.Entity, size image.Point) {
+	s := image.Pt(size.X/2, size.Y/16).Add(sbPad.Mul(2))
 
-	// initalise size relative to the screen's size.
-	s := image.Pt(b.Dx()/2, b.Dy()/16)
-	ap := bento.Center.Align(p, s)
+	// The total size of the scrollbox includes the semicircles on each side of the rectangle.
+	b := bento.Bound(image.Point{}, s.Add(image.Pt(s.Y, 0)))
 
-	sb.bound = bento.Bound(ap, s)
+	sb.rect = bento.Bound(image.Pt(s.Y/2, 0), s)
 
-	// align scroll to the left edge and vertically center of the scrollbox.
-	sb.pos = bento.CenterLeft.Point(sb.bound)
-	// adjust y manually so the text doesn't jitter becuase of changing height.
-	sb.pos.Y += sb.size.Y / 2
+	sb.scrollpos = bento.CenterLeft.Point(sb.rect)
+	// offset scrollpos so it will be within the padding
+	sb.scrollpos.X += sbPad.X
+	sb.scrollpos.Y += sb.scroll.Size().Y / 2
+
+	sb.canvas = bento.NewImageBound(b)
+
+	p := image.Pt(size.X/2, int(float64(size.Y)*0.9))
+
+	// TODO: enter transition
+	entity.Position = bento.Center.Align(p, sb.canvas.Bounds().Size())
+	entity.Show(nil)
+
+	fmt.Println(p, entity.Position, sb.canvas.Bounds(), sb.rect)
 }
 
-func (sb *Scrollbox) Update() {
+func (sb *Scrollbox) Update(entity *bento.Entity) error {
 	if bento.Keypress(confirmKeys) {
 		// skip the text if it's still scrolling, otherwise go to the next text.
 		if !sb.scroll.Done() {
@@ -70,28 +77,32 @@ func (sb *Scrollbox) Update() {
 			}
 		}
 	}
+
+	return nil
 }
 
-func (sb *Scrollbox) Draw(img *ebiten.Image) {
+func (sb *Scrollbox) Render() *ebiten.Image {
+	sb.canvas.Clear()
+
+	r := sb.rect.Dy() / 2
+
 	// draw the background of the scrollbox.
-	pb := bento.Pad(sb.bound, image.Pt(10, 10))
-
-	r := pb.Dy() / 2
-
 	var vec bento.Vec
 
 	// rectangle
-	vec.Rect(pb)
+	vec.Rect(sb.rect)
 
 	// semicircles
-	vec.Arc(bento.CenterRight.Point(pb), r, bento.Deg90, bento.Deg270)
-	vec.Arc(bento.CenterLeft.Point(pb), r, bento.Deg270, bento.Deg90)
+	vec.Arc(bento.CenterRight.Point(sb.rect), r, bento.Deg90, bento.Deg270)
+	vec.Arc(bento.CenterLeft.Point(sb.rect), r, bento.Deg270, bento.Deg90)
 
-	vec.Draw(sbColor, img, nil)
+	vec.Draw(sbColor, sb.canvas, nil)
 	//vec.DrawShader(color.White, img, gradient, nil)
 
 	// render scroll text
-	sb.scroll.Draw(color.Black, sb.pos, img)
+	sb.scroll.Draw(color.Black, sb.scrollpos, sb.canvas)
+
+	return sb.canvas
 }
 
 // Done checks if the scrollbox has finished scrolling all text.

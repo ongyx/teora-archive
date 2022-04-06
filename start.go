@@ -24,9 +24,7 @@ type Start struct {
 	subtitle *bento.Scroll
 }
 
-func (s *Start) Init(screen *ebiten.Image) {
-
-}
+func (s *Start) Init(size image.Point) {}
 
 func (s *Start) Update(stage *bento.Stage) error {
 	return nil
@@ -48,6 +46,10 @@ func (s *Start) Draw(screen *ebiten.Image) {
 		),
 		screen,
 	)
+}
+
+func (s *Start) Entities() []*bento.Entity {
+	return nil
 }
 
 func (s *Start) Enter() bento.Transition {

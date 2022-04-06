@@ -24,7 +24,7 @@ type Scroll struct {
 func NewScroll(font *Font, tx string) *Scroll {
 	s := &Scroll{
 		Font:  font,
-		clock: NewClock(0.05),
+		clock: NewClock(0.03),
 	}
 	s.SetText(tx)
 
