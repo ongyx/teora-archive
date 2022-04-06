@@ -6,9 +6,11 @@ NOTE: This project is neither affiliated with nor endorsed by GeoEXE.
 
 ## Building
 
-Running `make assets` followed by `make` should build teora, along with any assets, without any fuss.
+Running `make` should build teora without any fuss.
 
-However, it is recommended to build teora in debug mode using `make debug` for now.
+If necessary, you can (re)build teora's assets with `make assets bento`.
+
+However, it is recommended to build teora in debug mode using `make DEBUG=1` for now.
 Among other things, it adds a TPS counter and builds teora as a console app so logs appear in the console (on Windows).
 
 CGo is required, but cross-compiling from Linux to Windows works out of the box; The default Make target builds both a native and a Windows binary.

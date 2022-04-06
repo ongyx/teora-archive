@@ -48,10 +48,6 @@ func (s *Start) Draw(screen *ebiten.Image) {
 	)
 }
 
-func (s *Start) Entities() []*bento.Entity {
-	return nil
-}
-
 func (s *Start) Enter() bento.Transition {
 	return anim.NewFade(true, color.Black, 1)
 }

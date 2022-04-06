@@ -1,7 +1,6 @@
 package teora
 
 import (
-	"fmt"
 	"image"
 	"image/color"
 
@@ -13,7 +12,6 @@ import (
 var (
 	// TODO: add gradient?
 	sbColor = color.NRGBA{250, 250, 250, 255}
-	sbPad   = image.Pt(10, 10)
 
 	confirmKeys = []ebiten.Key{ebiten.KeyEnter, ebiten.KeySpace}
 )
@@ -23,7 +21,7 @@ type Scrollbox struct {
 	scroll    *bento.Scroll
 	scrollpos image.Point
 
-	rect   image.Rectangle
+	vec    bento.Vec
 	canvas *ebiten.Image
 
 	stream bento.Stream
@@ -41,27 +39,34 @@ func NewScrollbox(stream bento.Stream, font *bento.Font) *Scrollbox {
 }
 
 func (sb *Scrollbox) Init(entity *bento.Entity, size image.Point) {
-	s := image.Pt(size.X/2, size.Y/16).Add(sbPad.Mul(2))
+	sb.canvas = ebiten.NewImage(int(float64(size.X)/1.5), size.Y/12)
 
-	// The total size of the scrollbox includes the semicircles on each side of the rectangle.
-	b := bento.Bound(image.Point{}, s.Add(image.Pt(s.Y, 0)))
+	// Draw a transparent stadium on the canvas
+	// https://en.wikipedia.org/wiki/Stadium_(geometry)
+	b := sb.canvas.Bounds()
+	d := b.Dy()
+	r := d / 2
+	a := b.Dx() - d
 
-	sb.rect = bento.Bound(image.Pt(s.Y/2, 0), s)
+	rect := image.Rect(r, 0, r+a, d)
+	rp := bento.CenterRight.Point(rect)
+	lp := bento.CenterLeft.Point(rect)
 
-	sb.scrollpos = bento.CenterLeft.Point(sb.rect)
-	// offset scrollpos so it will be within the padding
-	sb.scrollpos.X += sbPad.X
+	// rectangle
+	sb.vec.Rect(rect)
+
+	// semicircles
+	sb.vec.Arc(rp, r, bento.Deg90, bento.Deg270)
+	sb.vec.Arc(lp, r, bento.Deg270, bento.Deg90)
+
+	sb.scrollpos = lp
 	sb.scrollpos.Y += sb.scroll.Size().Y / 2
-
-	sb.canvas = bento.NewImageBound(b)
 
 	p := image.Pt(size.X/2, int(float64(size.Y)*0.9))
 
 	// TODO: enter transition
 	entity.Position = bento.Center.Align(p, sb.canvas.Bounds().Size())
 	entity.Show(nil)
-
-	fmt.Println(p, entity.Position, sb.canvas.Bounds(), sb.rect)
 }
 
 func (sb *Scrollbox) Update(entity *bento.Entity) error {
@@ -84,20 +89,7 @@ func (sb *Scrollbox) Update(entity *bento.Entity) error {
 func (sb *Scrollbox) Render() *ebiten.Image {
 	sb.canvas.Clear()
 
-	r := sb.rect.Dy() / 2
-
-	// draw the background of the scrollbox.
-	var vec bento.Vec
-
-	// rectangle
-	vec.Rect(sb.rect)
-
-	// semicircles
-	vec.Arc(bento.CenterRight.Point(sb.rect), r, bento.Deg90, bento.Deg270)
-	vec.Arc(bento.CenterLeft.Point(sb.rect), r, bento.Deg270, bento.Deg90)
-
-	vec.Draw(sbColor, sb.canvas, nil)
-	//vec.DrawShader(color.White, img, gradient, nil)
+	sb.vec.Draw(sbColor, sb.canvas, nil)
 
 	// render scroll text
 	sb.scroll.Draw(color.Black, sb.scrollpos, sb.canvas)

@@ -14,9 +14,6 @@ type Scene interface {
 	Update(stage *Stage) error
 	// Draw renders the scene on screen.
 	Draw(screen *ebiten.Image)
-	// Entities returns the entities on this scene.
-	// Entities are always updated and drawn before the scene.
-	Entities() []*Entity
 	// Enter returns the enter transition of the scene, if any.
 	Enter() Transition
 	// Exit returns the enter transition of the scene, if any.

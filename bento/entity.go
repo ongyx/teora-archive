@@ -7,6 +7,7 @@ import (
 )
 
 // RenderState represents the rendering state of a sprite/scene.
+//go:generate stringer -type=RenderState
 type RenderState int
 
 const (
@@ -23,10 +24,9 @@ const (
 type Entity struct {
 	// The position of the sprite on screen.
 	Position image.Point
+	Sprite   Sprite
 
-	sprite Sprite
-
-	hidden, init bool
+	hidden, init, guard bool
 
 	transition  Transition
 	renderState RenderState
@@ -35,17 +35,7 @@ type Entity struct {
 // NewEntity constructs an entity from a sprite.
 // Entities are hidden by default.
 func NewEntity(sprite Sprite) *Entity {
-	return &Entity{sprite: sprite, hidden: true}
-}
-
-// NewEntitySlice constructs a slice of entites from sprites.
-func NewEntitySlice(sprites ...Sprite) []*Entity {
-	entities := make([]*Entity, len(sprites))
-	for i, s := range sprites {
-		entities[i] = NewEntity(s)
-	}
-
-	return entities
+	return &Entity{Sprite: sprite, hidden: true}
 }
 
 // RenderState returns the rendering state of the sprite.
@@ -85,28 +75,41 @@ func (e *Entity) Hide(t Transition) {
 	}
 }
 
-func (e *Entity) update() error {
+// Update updates the sprite's state.
+// NOTE: This will panic if called within the sprite's update method!
+func (e *Entity) Update() error {
+	if e.guard {
+		panic("entity: Update recursively called in sprite")
+	} else {
+		e.guard = true
+	}
+
+	defer func() {
+		e.guard = false
+	}()
+
 	if e.transition != nil {
 		if err := e.transition.Update(); err != nil {
 			return err
 		}
 	}
 
-	if err := e.sprite.Update(e); err != nil {
+	if err := e.Sprite.Update(e); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (e *Entity) draw(screen *ebiten.Image) {
+// Draw draws the sprite's render onto the screen.
+func (e *Entity) Draw(screen *ebiten.Image) {
 	if !e.init {
-		e.sprite.Init(e, screen.Bounds().Size())
+		e.Sprite.Init(e, screen.Bounds().Size())
 		e.init = true
 	}
 
 	if !e.hidden {
-		render := e.sprite.Render()
+		render := e.Sprite.Render()
 
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(e.Position.X), float64(e.Position.Y))

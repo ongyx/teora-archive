@@ -44,13 +44,13 @@ func NewStage(initial Scene) *Stage {
 
 // Change changes the scene to render in the next frame.
 func (s *Stage) Change(newScene Scene) {
-	log.Println("changing scene")
-
 	// set the exit transition to the old scene's, and the enter transition to the new scene's.
 	oldScene := s.scene
 
 	s.exit = oldScene.Exit()
 	s.enter = newScene.Enter()
+
+	log.Printf("changing scene (%p) -> (%p)\n", oldScene, newScene)
 
 	s.scene = newScene
 	s.init = false
@@ -66,11 +66,6 @@ func (s *Stage) Update() error {
 	}
 
 	if s.state != Exiting {
-		for _, e := range s.scene.Entities() {
-			if err := e.update(); err != nil {
-				return err
-			}
-		}
 		if err := s.scene.Update(s); err != nil {
 			return err
 		}
@@ -87,6 +82,7 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 	// initalize scene
 	if !s.init {
+		log.Printf("initalizing scene (%p)\n", s.scene)
 		s.scene.Init(screen.Bounds().Size())
 		s.init = true
 	}
@@ -94,10 +90,7 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 	// render the scene only if we aren't exiting
 	if s.state != Exiting {
 		s.snapshot.Clear()
-		for _, e := range s.scene.Entities() {
-			e.draw(screen)
-		}
-		s.scene.Draw(screen)
+		s.scene.Draw(s.snapshot)
 	}
 
 	screen.DrawImage(s.snapshot, nil)
@@ -109,9 +102,11 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 			// transition finished, change rendering state
 			switch s.state {
 			case Entering:
+				log.Println("enter transition finished")
 				s.state = Normal
 				s.enter = nil
 			case Exiting:
+				log.Println("exit transition finished")
 				// render the enter transition of the new scene
 				s.state = Entering
 				s.exit = nil

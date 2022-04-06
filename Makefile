@@ -1,17 +1,21 @@
+# User-defined variables
+DEBUG := 0
+
 MAIN := main/main.go
 BUILD := build
 BINARY := $(BUILD)/teora
 TAGS :=
+WFLAGS :=
 
-.PHONY: all assets clean
+ifneq ($(DEBUG),0)
+	TAGS := debug #ebitendebug
+else
+	WFLAGS := -ldflags -H=windowsgui
+endif
 
-all: release
+.PHONY: all assets bento clean
 
-debug: TAGS := debug #ebitendebug
-debug: native windows
-
-release: WFLAGS := -ldflags -H=windowsgui
-release: native windows
+all: native windows
 
 native:
 	go build -o $(BINARY) -tags=$(TAGS) $(MAIN)
@@ -25,6 +29,9 @@ windows:
 
 assets:
 	$(MAKE) -C assets all
+
+bento:
+	cd bento && go generate
 
 clean:
 	rm -r $(BUILD)

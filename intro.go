@@ -1,6 +1,7 @@
 package teora
 
 import (
+	"fmt"
 	"image"
 	"image/color"
 
@@ -26,32 +27,31 @@ func init() {
 
 	sb := NewScrollbox(s, Hack)
 
-	IntroScene = &Intro{
-		scroll:  sb,
-		entites: bento.NewEntitySlice(sb),
-	}
+	IntroScene = &Intro{scroll: bento.NewEntity(sb)}
 }
 
 // Intro is the splash/startup screen.
 type Intro struct {
-	scroll  *Scrollbox
-	entites []*bento.Entity
+	scroll *bento.Entity
 }
 
 func (i *Intro) Init(size image.Point) {}
 
-func (i *Intro) Update(stage *bento.Stage) error {
-	if i.scroll.Done() && bento.Keypress(confirmKeys) {
+func (i *Intro) Update(stage *bento.Stage) error {	
+	if err := i.scroll.Update(); err != nil {
+		return err
+	}
+
+	if i.scroll.Sprite.(*Scrollbox).Done() && bento.Keypress(confirmKeys) {
+		fmt.Println("intro: changing to start")
 		stage.Change(StartScene)
 	}
 
 	return nil
 }
 
-func (i *Intro) Draw(screen *ebiten.Image) {}
-
-func (i *Intro) Entities() []*bento.Entity {
-	return i.entites
+func (i *Intro) Draw(screen *ebiten.Image) {
+	i.scroll.Draw(screen)
 }
 
 func (i *Intro) Enter() bento.Transition {

@@ -10,13 +10,13 @@ import (
 
 const (
 	alphaMin = 0
-	alphaMax = 255
+	alphaMax = 0xffff
 )
 
 // Fade is a transition that fades from/into a color.
 type Fade struct {
 	in    bool
-	color color.NRGBA
+	color color.NRGBA64
 	clock *bento.Clock
 
 	alpha, apt float64
@@ -38,7 +38,7 @@ func NewFade(in bool, clr color.Color, duration float64) *Fade {
 
 	return &Fade{
 		in:    in,
-		color: color.NRGBAModel.Convert(clr).(color.NRGBA),
+		color: color.NRGBA64Model.Convert(clr).(color.NRGBA64),
 		clock: c,
 		alpha: a,
 		apt:   alphaMax / float64(c.Limit()),
@@ -72,7 +72,7 @@ func (f *Fade) Draw(screen *ebiten.Image) {
 		f.overlay = ebiten.NewImage(screen.Size())
 	}
 
-	f.color.A = uint8(f.alpha)
+	f.color.A = uint16(f.alpha)
 	f.overlay.Fill(f.color)
 
 	screen.DrawImage(f.overlay, nil)
