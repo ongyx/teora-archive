@@ -2,7 +2,6 @@ package teora
 
 import (
 	"fmt"
-	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -35,9 +34,7 @@ type Intro struct {
 	scroll *bento.Entity
 }
 
-func (i *Intro) Init(size image.Point) {}
-
-func (i *Intro) Update(stage *bento.Stage) error {	
+func (i *Intro) Update(stage *bento.Stage) error {
 	if err := i.scroll.Update(); err != nil {
 		return err
 	}

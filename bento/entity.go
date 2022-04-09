@@ -26,7 +26,7 @@ type Entity struct {
 	Position image.Point
 	Sprite   Sprite
 
-	hidden, init, guard bool
+	hidden, guard bool
 
 	transition  Transition
 	renderState RenderState
@@ -48,53 +48,38 @@ func (e *Entity) Hidden() bool {
 	return e.hidden
 }
 
-// Show shows the sprite if it's hidden, after rendering an enter transition.
+// Show shows the sprite, after rendering an enter transition.
 // If t is nil, the sprite is immediately shown.
 func (e *Entity) Show(t Transition) {
-	if e.hidden {
-		// NOTE: the sprite must be drawn during the enter transition.
-		e.hidden = false
+	// NOTE: the sprite must be drawn during the enter transition.
+	e.hidden = false
 
-		if t != nil {
-			e.transition = t
-			e.renderState = Entering
-		}
+	if t != nil {
+		e.transition = t
+		e.renderState = Entering
 	}
 }
 
-// Hide hides the sprite if it's visible, after rendering an exit transition.
+// Hide hides the sprite, after rendering an exit transition.
 // If t is nil, the sprite is immediately hidden.
 func (e *Entity) Hide(t Transition) {
-	if !e.hidden {
-		if t != nil {
-			e.transition = t
-			e.renderState = Exiting
-		} else {
-			e.hidden = true
-		}
+	if t != nil {
+		e.transition = t
+		e.renderState = Exiting
+	} else {
+		e.hidden = true
 	}
 }
 
 // Update updates the sprite's state.
-// NOTE: This will panic if called within the sprite's update method!
 func (e *Entity) Update() error {
-	if e.guard {
-		panic("entity: Update recursively called in sprite")
-	} else {
-		e.guard = true
-	}
-
-	defer func() {
-		e.guard = false
-	}()
-
 	if e.transition != nil {
 		if err := e.transition.Update(); err != nil {
 			return err
 		}
 	}
 
-	if err := e.Sprite.Update(e); err != nil {
+	if err := e.Sprite.Update(); err != nil {
 		return err
 	}
 
@@ -103,34 +88,29 @@ func (e *Entity) Update() error {
 
 // Draw draws the sprite's render onto the screen.
 func (e *Entity) Draw(screen *ebiten.Image) {
-	if !e.init {
-		e.Sprite.Init(e, screen.Bounds().Size())
-		e.init = true
+	render := e.Sprite.Render(e, screen.Bounds().Size())
+
+	if e.transition != nil {
+		// draw transition over the render.
+		e.transition.Draw(render)
+
+		if e.transition.Done() {
+			// transition finished, change rendering state
+			switch e.renderState {
+			case Entering:
+				e.renderState = Normal
+			case Exiting:
+				e.hidden = true
+				e.renderState = Entering
+			}
+
+			e.transition = nil
+		}
 	}
 
 	if !e.hidden {
-		render := e.Sprite.Render()
-
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(e.Position.X), float64(e.Position.Y))
 		screen.DrawImage(render, op)
-
-		if e.transition != nil {
-			// draw transition over the render.
-			e.transition.Draw(render)
-
-			if e.transition.Done() {
-				// transition finished, change rendering state
-				switch e.renderState {
-				case Entering:
-					e.renderState = Normal
-				case Exiting:
-					e.hidden = true
-					e.renderState = Entering
-				}
-
-				e.transition = nil
-			}
-		}
 	}
 }

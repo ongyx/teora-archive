@@ -19,8 +19,9 @@ type Fade struct {
 	color color.NRGBA64
 	clock *bento.Clock
 
-	alpha, apt float64
-	overlay    *ebiten.Image
+	done         bool
+	alpha, delta float64
+	overlay      *ebiten.Image
 }
 
 // NewFade creates a new fade transition with a duration.
@@ -41,7 +42,7 @@ func NewFade(in bool, clr color.Color, duration float64) *Fade {
 		color: color.NRGBA64Model.Convert(clr).(color.NRGBA64),
 		clock: c,
 		alpha: a,
-		apt:   alphaMax / float64(c.Limit()),
+		delta: alphaMax / float64(c.Limit()),
 	}
 }
 
@@ -49,10 +50,10 @@ func (f *Fade) Update() error {
 	var d, m float64
 
 	if f.in {
-		d = -f.apt
+		d = -f.delta
 		m = alphaMin
 	} else {
-		d = f.apt
+		d = f.delta
 		m = alphaMax
 	}
 
@@ -60,6 +61,7 @@ func (f *Fade) Update() error {
 		f.alpha += d
 	} else {
 		f.alpha = m
+		f.done = true
 	}
 
 	f.clock.Tick()
@@ -79,5 +81,5 @@ func (f *Fade) Draw(screen *ebiten.Image) {
 }
 
 func (f *Fade) Done() bool {
-	return f.clock.Done()
+	return f.done
 }

@@ -24,9 +24,8 @@ type Start struct {
 	subtitle *bento.Scroll
 }
 
-func (s *Start) Init(size image.Point) {}
-
 func (s *Start) Update(stage *bento.Stage) error {
+	s.subtitle.Update()
 	return nil
 }
 

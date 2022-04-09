@@ -1,6 +1,8 @@
 package bento
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 // Transition is a animation that is rendered on top of a sprite/scene.
 type Transition interface {

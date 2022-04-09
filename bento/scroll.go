@@ -67,6 +67,13 @@ func (s *Scroll) Size() image.Point {
 	return s.tsize
 }
 
+// Update updates the state of the scroll.
+func (s *Scroll) Update() {
+	if s.clock.Done() && s.tpos != s.tend {
+		s.tpos++
+	}
+}
+
 // Draw renders the scroll on a new image.
 // point is the bottom-left point of the scroll.
 func (s *Scroll) Draw(
@@ -78,10 +85,6 @@ func (s *Scroll) Draw(
 
 	if s.tpos != s.tend {
 		t = t[:s.tpos+1]
-
-		if s.clock.Done() {
-			s.tpos++
-		}
 	}
 
 	s.clock.Tick()

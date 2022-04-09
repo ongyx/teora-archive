@@ -22,7 +22,6 @@ type Stage struct {
 	Debug *DebugOptions
 
 	scene Scene
-	init  bool
 
 	// snapshot holds the last rendered frame of the current scene.
 	// This is used mainly for transitions.
@@ -53,7 +52,6 @@ func (s *Stage) Change(newScene Scene) {
 	log.Printf("changing scene (%p) -> (%p)\n", oldScene, newScene)
 
 	s.scene = newScene
-	s.init = false
 	s.state = Exiting
 }
 
@@ -78,13 +76,6 @@ func (s *Stage) Update() error {
 func (s *Stage) Draw(screen *ebiten.Image) {
 	if s.snapshot == nil {
 		s.snapshot = ebiten.NewImage(screen.Size())
-	}
-
-	// initalize scene
-	if !s.init {
-		log.Printf("initalizing scene (%p)\n", s.scene)
-		s.scene.Init(screen.Bounds().Size())
-		s.init = true
 	}
 
 	// render the scene only if we aren't exiting
