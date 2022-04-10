@@ -2,14 +2,17 @@ package bento
 
 import (
 	"image"
+	"math"
 
 	"gonum.org/v1/gonum/floats"
 )
 
 const (
-	// Linear specifies a delta is constant (a linear graph).
+	// Linear specifies a delta is constant.
 	Linear DeltaAlgorithm = iota
-	// Log specifies a delta over log space (a log graph).
+	// Exponential specifies a delta in exponential (e^x) space.
+	Exponential
+	// Log specifies a delta in log (ln x) space.
 	Log
 )
 
@@ -42,14 +45,19 @@ func NewDelta(
 	x := float64(delta.X)
 	y := float64(delta.Y)
 
+	var algo func([]float64, float64, float64) []float64
+
 	switch dalgo {
 	case Linear:
-		floats.Span(dx, 1, x)
-		floats.Span(dy, 1, y)
+		algo = floats.Span
+	case Exponential:
+		algo = floats.LogSpan
 	case Log:
-		floats.LogSpan(dx, 1, x)
-		floats.LogSpan(dy, 1, y)
+		algo = expSpan
 	}
+
+	algo(dx, 1, x)
+	algo(dy, 1, y)
 
 	return &Delta{
 		delta: delta,
@@ -73,12 +81,35 @@ func (d *Delta) Update() {
 
 // Delta returns the current delta.
 func (d *Delta) Delta() image.Point {
-	x := d.dx[d.idx]
-	y := d.dy[d.idx]
+	var x, y float64
+
+	// special case: if x/y delta is 0, return 0 here too
+	// otherwise it will return NaN
+	if d.delta.X != 0 {
+		x = d.dx[d.idx]
+	}
+
+	if d.delta.Y != 0 {
+		y = d.dy[d.idx]
+	}
+
 	return image.Pt(int(x), int(y))
 }
 
 // Done checks if the current delta is equal to the total delta.
 func (d *Delta) Done() bool {
 	return d.idx == d.limit
+}
+
+func expSpan(dst []float64, l, u float64) []float64 {
+	floats.Span(dst, l, u)
+
+	for i := range dst {
+		dst[i] = math.Log(dst[i])
+	}
+
+	// NOTE: assuming u > l > 0!
+	floats.Scale(u/floats.Max(dst), dst)
+
+	return dst
 }

@@ -40,7 +40,7 @@ func (sba *sbAnim) Draw(img *ebiten.Image) {
 		a := b.Dx() - d
 
 		sba.rect = image.Rect(r, 0, r, d)
-		sba.delta = bento.NewDelta(bento.Log, image.Pt(a, 0), 1)
+		sba.delta = bento.NewDelta(bento.Exponential, image.Pt(a, 0), 0.3)
 
 		sba.mask = ebiten.NewImage(img.Size())
 	}
