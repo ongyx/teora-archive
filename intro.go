@@ -52,9 +52,9 @@ func (i *Intro) Draw(screen *ebiten.Image) {
 }
 
 func (i *Intro) Enter() bento.Transition {
-	return anim.NewFade(true, color.Black, 0.5)
+	return anim.NewFade(true, color.Black, 1)
 }
 
 func (i *Intro) Exit() bento.Transition {
-	return anim.NewFade(false, color.Black, 0.5)
+	return anim.NewFade(false, color.Black, 1)
 }

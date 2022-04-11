@@ -42,6 +42,10 @@ func NewDelta(
 	dx := make([]float64, l)
 	dy := make([]float64, l)
 
+	// some algorithms require the start to be at least 1, so add 1 to the delta here.
+	delta.X += 1
+	delta.Y += 1
+
 	x := float64(delta.X)
 	y := float64(delta.Y)
 
@@ -62,13 +66,14 @@ func NewDelta(
 	return &Delta{
 		delta: delta,
 		clock: c,
-		limit: l - 1,
+		limit: l,
 		dx:    dx,
 		dy:    dy,
 	}
 }
 
 // Update updates the delta.
+// NOTE: If you're using this in a sprite/transition, only call this _after_ any call of d.Delta()!
 func (d *Delta) Update() {
 	if d.clock.Done() {
 		d.idx = d.limit
@@ -86,11 +91,11 @@ func (d *Delta) Delta() image.Point {
 	// special case: if x/y delta is 0, return 0 here too
 	// otherwise it will return NaN
 	if d.delta.X != 0 {
-		x = d.dx[d.idx]
+		x = d.dx[d.idx] - 1
 	}
 
 	if d.delta.Y != 0 {
-		y = d.dy[d.idx]
+		y = d.dy[d.idx] - 1
 	}
 
 	return image.Pt(int(x), int(y))

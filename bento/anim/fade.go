@@ -1,6 +1,7 @@
 package anim
 
 import (
+	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -9,62 +10,41 @@ import (
 )
 
 const (
-	alphaMin = 0
-	alphaMax = 0xffff
+	alphaMax = 255
 )
 
 // Fade is a transition that fades from/into a color.
 type Fade struct {
 	in    bool
-	color color.NRGBA64
-	clock *bento.Clock
+	color color.NRGBA
 
-	done         bool
-	alpha, delta float64
-	overlay      *ebiten.Image
+	delta   *bento.Delta
+	overlay *ebiten.Image
 }
 
 // NewFade creates a new fade transition with a duration.
 // If in is true, the transition fades from solid to transparent,
 // otherwise the transition fades from transparent to solid.
 func NewFade(in bool, clr color.Color, duration float64) *Fade {
-	c := bento.NewClockOnce(duration)
-
-	var a float64
-	if in {
-		a = alphaMax
-	} else {
-		a = alphaMin
-	}
+	d := bento.NewDelta(bento.Linear, image.Pt(alphaMax, 0), duration)
 
 	return &Fade{
 		in:    in,
-		color: color.NRGBA64Model.Convert(clr).(color.NRGBA64),
-		clock: c,
-		alpha: a,
-		delta: alphaMax / float64(c.Limit()),
+		color: color.NRGBAModel.Convert(clr).(color.NRGBA),
+		delta: d,
 	}
 }
 
 func (f *Fade) Update() error {
-	var d, m float64
+	d := f.delta.Delta().X
 
 	if f.in {
-		d = -f.delta
-		m = alphaMin
-	} else {
-		d = f.delta
-		m = alphaMax
+		d = alphaMax - d
 	}
 
-	if !f.clock.Done() {
-		f.alpha += d
-	} else {
-		f.alpha = m
-		f.done = true
-	}
+	f.color.A = uint8(d)
 
-	f.clock.Tick()
+	f.delta.Update()
 
 	return nil
 }
@@ -74,12 +54,11 @@ func (f *Fade) Draw(screen *ebiten.Image) {
 		f.overlay = ebiten.NewImage(screen.Size())
 	}
 
-	f.color.A = uint16(f.alpha)
 	f.overlay.Fill(f.color)
 
 	screen.DrawImage(f.overlay, nil)
 }
 
 func (f *Fade) Done() bool {
-	return f.done
+	return f.delta.Done()
 }

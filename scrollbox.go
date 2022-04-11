@@ -17,7 +17,8 @@ var (
 )
 
 type sbAnim struct {
-	rect  image.Rectangle
+	rect image.Rectangle
+
 	delta *bento.Delta
 
 	vec  *bento.Vec
@@ -25,10 +26,6 @@ type sbAnim struct {
 }
 
 func (sba *sbAnim) Update() error {
-	if sba.delta != nil {
-		sba.delta.Update()
-	}
-
 	return nil
 }
 
@@ -40,18 +37,19 @@ func (sba *sbAnim) Draw(img *ebiten.Image) {
 		a := b.Dx() - d
 
 		sba.rect = image.Rect(r, 0, r, d)
-		sba.delta = bento.NewDelta(bento.Exponential, image.Pt(a, 0), 0.3)
+
+		sba.delta = bento.NewDelta(bento.Exponential, image.Pt(a, 0), 0.5)
 
 		sba.mask = ebiten.NewImage(img.Size())
 	}
 
-	// Draw a stadium on the canvas
-	// https://en.wikipedia.org/wiki/Stadium_(geometry)
 	rect := image.Rectangle{
 		Min: sba.rect.Min,
 		Max: sba.rect.Max.Add(sba.delta.Delta()),
 	}
 
+	// Draw a stadium on the canvas
+	// https://en.wikipedia.org/wiki/Stadium_(geometry)
 	sba.vec = stadium(rect)
 
 	sba.mask.Fill(color.Alpha{0})
@@ -59,6 +57,8 @@ func (sba *sbAnim) Draw(img *ebiten.Image) {
 	sba.vec.Draw(color.Alpha{255}, sba.mask, nil)
 
 	mask(img, sba.mask, nil)
+
+	sba.delta.Update()
 }
 
 func (sba *sbAnim) Done() bool {
