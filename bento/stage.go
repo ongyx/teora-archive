@@ -27,44 +27,41 @@ type Stage struct {
 	// This is used mainly for transitions.
 	snapshot *ebiten.Image
 
-	enter, exit Transition
-	state       RenderState
+	transition  Transition
+	renderState RenderState
 }
 
 // NewStage creates a stage with an inital scene.
 // NOTE: The initial scene's enter animation is rendered!
 func NewStage(initial Scene) *Stage {
 	return &Stage{
-		scene: initial,
-		enter: initial.Enter(),
-		state: Entering,
+		scene:       initial,
+		transition:  initial.Enter(),
+		renderState: Entering,
 	}
 }
 
 // Change changes the scene to render in the next frame.
 func (s *Stage) Change(newScene Scene) {
-	// set the exit transition to the old scene's, and the enter transition to the new scene's.
 	oldScene := s.scene
-
-	s.exit = oldScene.Exit()
-	s.enter = newScene.Enter()
 
 	log.Printf("changing scene (%p) -> (%p)\n", oldScene, newScene)
 
+	s.setTransition(oldScene.Exit(), Exiting)
+
 	s.scene = newScene
-	s.state = Exiting
 }
 
 // Update updates the current scene's state.
 func (s *Stage) Update() error {
-	if t := s.transition(); t != nil {
-		if err := t.Update(); err != nil {
+	if s.renderState != Exiting {
+		if err := s.scene.Update(s); err != nil {
 			return err
 		}
 	}
 
-	if s.state != Exiting {
-		if err := s.scene.Update(s); err != nil {
+	if s.renderState != Normal {
+		if err := s.transition.Update(); err != nil {
 			return err
 		}
 	}
@@ -79,28 +76,26 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 	}
 
 	// render the scene only if we aren't exiting
-	if s.state != Exiting {
+	if s.renderState != Exiting {
 		s.snapshot.Clear()
 		s.scene.Draw(s.snapshot)
 	}
 
 	screen.DrawImage(s.snapshot, nil)
 
-	if t := s.transition(); t != nil {
-		t.Draw(screen)
+	if s.renderState != Normal {
+		s.transition.Draw(screen)
 
-		if t.Done() {
+		if s.transition.Done() {
 			// transition finished, change rendering state
-			switch s.state {
+			switch s.renderState {
 			case Entering:
 				log.Println("enter transition finished")
-				s.state = Normal
-				s.enter = nil
+				s.setTransition(nil, Normal)
 			case Exiting:
 				log.Println("exit transition finished")
 				// render the enter transition of the new scene
-				s.state = Entering
-				s.exit = nil
+				s.setTransition(s.scene.Enter(), Entering)
 			}
 		}
 	}
@@ -122,15 +117,12 @@ func (s *Stage) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeig
 	return DPIScale(outsideWidth), DPIScale(outsideHeight)
 }
 
-func (s *Stage) transition() Transition {
-	var t Transition
-
-	switch s.state {
-	case Entering:
-		t = s.enter
-	case Exiting:
-		t = s.exit
+func (s *Stage) setTransition(t Transition, rs RenderState) {
+	if t != nil {
+		s.transition = t
+		s.renderState = rs
+	} else {
+		s.transition = nil
+		s.renderState = Normal
 	}
-
-	return t
 }

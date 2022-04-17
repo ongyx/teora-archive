@@ -4,7 +4,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Transition is a animation that is rendered on top of a sprite/scene.
+// Transition is a effect rendered on a scene/sprite.
 type Transition interface {
 	// Update updates the state of the transition.
 	Update() error
