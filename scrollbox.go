@@ -117,8 +117,11 @@ func (sb *Scrollbox) Render(entity *bento.Entity, size image.Point) *ebiten.Imag
 		sb.scrollpos.Y += sb.scroll.Size().Y / 2
 
 		p := image.Pt(size.X/2, int(float64(size.Y)*0.9))
+		pos := bento.Center.Align(p, sb.canvas.Bounds().Size())
 
-		entity.Position = bento.Center.Align(p, sb.canvas.Bounds().Size())
+		entity.Op = &ebiten.DrawImageOptions{}
+		entity.Op.GeoM.Translate(float64(pos.X), float64(pos.Y))
+
 		entity.Show(sb.anim)
 	}
 
@@ -127,7 +130,7 @@ func (sb *Scrollbox) Render(entity *bento.Entity, size image.Point) *ebiten.Imag
 	// render scroll text
 	sb.scroll.Draw(color.Black, sb.scrollpos, sb.canvas)
 
-	if entity.RenderState() == bento.Normal {
+	if entity.RenderState() == bento.Visible {
 		mask(sb.canvas, sb.anim.mask, nil)
 	}
 

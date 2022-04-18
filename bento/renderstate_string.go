@@ -8,14 +8,15 @@ func _() {
 	// An "invalid array index" compiler error signifies that the constant values have changed.
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
-	_ = x[Normal-0]
+	_ = x[Hidden-0]
 	_ = x[Entering-1]
-	_ = x[Exiting-2]
+	_ = x[Visible-2]
+	_ = x[Exiting-3]
 }
 
-const _RenderState_name = "NormalEnteringExiting"
+const _RenderState_name = "HiddenEnteringVisibleExiting"
 
-var _RenderState_index = [...]uint8{0, 6, 14, 21}
+var _RenderState_index = [...]uint8{0, 6, 14, 21, 28}
 
 func (i RenderState) String() string {
 	if i < 0 || i >= RenderState(len(_RenderState_index)-1) {

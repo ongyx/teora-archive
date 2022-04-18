@@ -51,10 +51,13 @@ func (i *Intro) Draw(screen *ebiten.Image) {
 	i.scroll.Draw(screen)
 }
 
-func (i *Intro) Enter() bento.Transition {
-	return anim.NewFade(true, color.Black, 1)
+func (i *Intro) Enter() bento.Animation {
+	return nil
 }
 
-func (i *Intro) Exit() bento.Transition {
+func (i *Intro) Exit() bento.Animation {
+	// TODO: fix buggy scene changing when exit anim is nil
+	//return nil
+
 	return anim.NewFade(false, color.Black, 1)
 }

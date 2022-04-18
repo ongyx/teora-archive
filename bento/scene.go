@@ -4,14 +4,14 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-// Scene represents a 'level', or a segment of animation that is rendered on the screen.
+// Scene is a special kind of entity that draws directly to a screen instead of rendering to a image.
 type Scene interface {
 	// Update updates the state of the scene, if any.
 	Update(stage *Stage) error
 	// Draw renders the scene on screen.
 	Draw(screen *ebiten.Image)
 	// Enter returns the enter transition of the scene, if any.
-	Enter() Transition
+	Enter() Animation
 	// Exit returns the enter transition of the scene, if any.
-	Exit() Transition
+	Exit() Animation
 }

@@ -47,10 +47,10 @@ func (s *Start) Draw(screen *ebiten.Image) {
 	)
 }
 
-func (s *Start) Enter() bento.Transition {
+func (s *Start) Enter() bento.Animation {
 	return anim.NewFade(true, color.Black, 1)
 }
 
-func (s *Start) Exit() bento.Transition {
+func (s *Start) Exit() bento.Animation {
 	return anim.NewFade(false, color.Black, 1)
 }
