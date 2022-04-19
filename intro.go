@@ -50,12 +50,9 @@ func (i *Intro) Draw(screen *ebiten.Image) {
 }
 
 func (i *Intro) Enter() bento.Animation {
-	return anim.NewFade(true, color.Black, 1)
+	return anim.NewFade(true, color.Black, 0.5)
 }
 
 func (i *Intro) Exit() bento.Animation {
-	// TODO: fix buggy scene changing when exit anim is nil
-	return nil
-
-	//return anim.NewFade(false, color.Black, 1)
+	return anim.NewFade(false, color.Black, 0.5)
 }

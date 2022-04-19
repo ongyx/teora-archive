@@ -2,7 +2,6 @@ package bento
 
 import (
 	"image"
-	"math"
 
 	"gonum.org/v1/gonum/floats"
 )
@@ -12,8 +11,6 @@ const (
 	Linear DeltaAlgorithm = iota
 	// Exponential specifies a delta in exponential (e^x) space.
 	Exponential
-	// Log specifies a delta in log (ln x) space.
-	Log
 )
 
 // DeltaAlgorithm specifies the algorithm to use when generating deltas.
@@ -56,8 +53,6 @@ func NewDelta(
 		algo = floats.Span
 	case Exponential:
 		algo = floats.LogSpan
-	case Log:
-		algo = expSpan
 	}
 
 	algo(dx, 1, x)
@@ -106,17 +101,4 @@ func (d *Delta) Delta() image.Point {
 // Done checks if the current delta is equal to the total delta.
 func (d *Delta) Done() bool {
 	return d.idx == d.limit
-}
-
-func expSpan(dst []float64, l, u float64) []float64 {
-	floats.Span(dst, l, u)
-
-	for i := range dst {
-		dst[i] = math.Log(dst[i])
-	}
-
-	// NOTE: assuming u > l > 0!
-	floats.Scale(u/floats.Max(dst), dst)
-
-	return dst
 }

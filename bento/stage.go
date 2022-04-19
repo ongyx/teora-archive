@@ -76,7 +76,7 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 	// render the scene only if we aren't exiting
 	if s.transition.RenderState() != Exiting {
-		log.Printf("stage(%p): drawing to snapshot with %v state\n", s.scene, s.transition.RenderState())
+		//log.Printf("stage(%p): drawing to snapshot with %v state\n", s.scene, s.transition.RenderState())
 		s.snapshot.Clear()
 		s.scene.Draw(s.snapshot)
 	}

@@ -71,10 +71,10 @@ func (t *Transition) Draw(image *ebiten.Image) {
 			// transition finished, change rendering state
 			switch t.rs {
 			case Entering:
-				log.Printf("transition(%p): enter transition finished\n", t.anim)
+				log.Printf("transition(%p): enter anim done (Entering -> Visible)\n", t.anim)
 				t.rs = Visible
 			case Exiting:
-				log.Printf("transition(%p): exit transition finished\n", t.anim)
+				log.Printf("transition(%p): exit anim done (Exiting -> Hidden)\n", t.anim)
 				t.rs = Hidden
 			default:
 				// this really shouldn't happen.
