@@ -9,6 +9,7 @@ import (
 	_ "github.com/silbinarywolf/preferdiscretegpu"
 
 	"github.com/ongyx/teora"
+	"github.com/ongyx/teora/assets"
 	"github.com/ongyx/teora/bento"
 )
 
@@ -28,7 +29,7 @@ func main() {
 
 	var dbg *bento.Debug
 	if teora.Debug {
-		dbg = &bento.Debug{Font: teora.Hack}
+		dbg = &bento.Debug{Font: assets.Hack}
 	}
 
 	stage := bento.NewStage(teora.IntroScene, dbg)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"github.com/ongyx/teora/assets"
 	"github.com/ongyx/teora/bento"
 	"github.com/ongyx/teora/bento/anim"
 )
@@ -23,7 +24,7 @@ func init() {
 		}
 	})
 
-	IntroScene = &Intro{scroll: NewScrollbox(s, Hack)}
+	IntroScene = &Intro{scroll: NewScrollbox(s, assets.Hack)}
 }
 
 // Intro is the splash/startup screen.

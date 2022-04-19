@@ -1,6 +1,6 @@
 # data
 
-This folder contains sprites and fonts used in Teora.
+This folder contains sprites and fonts used in Teora, embedded as a Go package.
 
 To build, run `make all`, but install the prerequisites listed below first.
 
