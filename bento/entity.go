@@ -20,6 +20,17 @@ func NewEntity(sprite Sprite) *Entity {
 	return &Entity{Sprite: sprite, Transition: NewTransition()}
 }
 
+// NewEntities constructs a slice of entities from several sprites.
+func NewEntities(sprites ...Sprite) []*Entity {
+	// alloc slice with the exact size
+	es := make([]*Entity, len(sprites))
+	for i, s := range sprites {
+		es[i] = NewEntity(s)
+	}
+
+	return es
+}
+
 // Update updates the sprite's state.
 func (e *Entity) Update() error {
 	if err := e.Sprite.Update(); err != nil {

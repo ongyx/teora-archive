@@ -14,4 +14,6 @@ type Scene interface {
 	Enter() Animation
 	// Exit returns the enter transition of the scene, if any.
 	Exit() Animation
+	// Entities returns a slice of entities to render on the scene.
+	Entities() []*Entity
 }

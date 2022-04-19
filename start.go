@@ -54,3 +54,7 @@ func (s *Start) Enter() bento.Animation {
 func (s *Start) Exit() bento.Animation {
 	return anim.NewFade(false, color.Black, 0.5)
 }
+
+func (s *Start) Entities() []*bento.Entity {
+	return nil
+}

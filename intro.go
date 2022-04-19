@@ -23,31 +23,23 @@ func init() {
 		}
 	})
 
-	sb := NewScrollbox(s, Hack)
-
-	IntroScene = &Intro{scroll: bento.NewEntity(sb)}
+	IntroScene = &Intro{scroll: NewScrollbox(s, Hack)}
 }
 
 // Intro is the splash/startup screen.
 type Intro struct {
-	scroll *bento.Entity
+	scroll *Scrollbox
 }
 
 func (i *Intro) Update(stage *bento.Stage) error {
-	if err := i.scroll.Update(); err != nil {
-		return err
-	}
-
-	if i.scroll.Sprite.(*Scrollbox).Done() && bento.Keypress(confirmKeys) {
+	if i.scroll.Done() && bento.Keypress(confirmKeys) {
 		stage.Change(StartScene)
 	}
 
 	return nil
 }
 
-func (i *Intro) Draw(screen *ebiten.Image) {
-	i.scroll.Draw(screen)
-}
+func (i *Intro) Draw(screen *ebiten.Image) {}
 
 func (i *Intro) Enter() bento.Animation {
 	return anim.NewFade(true, color.Black, 0.5)
@@ -55,4 +47,8 @@ func (i *Intro) Enter() bento.Animation {
 
 func (i *Intro) Exit() bento.Animation {
 	return anim.NewFade(false, color.Black, 0.5)
+}
+
+func (i *Intro) Entities() []*bento.Entity {
+	return bento.NewEntities(i.scroll)
 }
