@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	_ "github.com/silbinarywolf/preferdiscretegpu"
@@ -10,14 +12,27 @@ import (
 	"github.com/ongyx/teora/bento"
 )
 
-func main() {
-	stage := bento.NewStage(teora.IntroScene)
+const (
+	logfile = "log.txt"
+)
 
+func main() {
+	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0644)
+	if err != nil {
+		panic(fmt.Sprintf("main: can't open logfile: %v", err))
+	}
+	defer f.Close()
+
+	log.SetFlags(0)
+	log.SetOutput(f)
+
+	var dbg *bento.Debug
 	if teora.Debug {
-		stage.Debug = &bento.DebugOptions{Font: teora.Hack}
+		dbg = &bento.Debug{Font: teora.Hack}
 	}
 
-	// ebiten.SetWindowSize(256, 256)
+	stage := bento.NewStage(teora.IntroScene, dbg)
+
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowTitle("Teora")
 

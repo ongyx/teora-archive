@@ -19,6 +19,8 @@ func NewTransition() *Transition {
 // Show sets the render state to Visible after rendering an enter animation.
 // If enter is nil, the state is immediately changed.
 func (t *Transition) Show(enter Animation) {
+	log.Printf("transition(%p): setting enter transition to %p\n", t.anim, enter)
+
 	if enter != nil {
 		t.rs = Entering
 		t.anim = enter
@@ -32,6 +34,8 @@ func (t *Transition) Show(enter Animation) {
 // Hide sets the render state to Hidden after rendering an exit transition.
 // If exit is nil, the state is immediately changed.
 func (t *Transition) Hide(exit Animation) {
+	log.Printf("transition(%p): setting exit transition to %p\n", t.anim, exit)
+
 	if exit != nil {
 		t.rs = Exiting
 		t.anim = exit
@@ -67,14 +71,14 @@ func (t *Transition) Draw(image *ebiten.Image) {
 			// transition finished, change rendering state
 			switch t.rs {
 			case Entering:
-				log.Println("enter transition finished")
+				log.Printf("transition(%p): enter transition finished\n", t.anim)
 				t.rs = Visible
 			case Exiting:
-				log.Println("exit transition finished")
+				log.Printf("transition(%p): exit transition finished\n", t.anim)
 				t.rs = Hidden
 			default:
 				// this really shouldn't happen.
-				panic("entity: inconsistent state")
+				panic("transition: inconsistent state")
 			}
 
 			t.anim = nil
@@ -86,7 +90,7 @@ func (t *Transition) transition() Animation {
 	if t.rs == Entering || t.rs == Exiting {
 		// sanity check
 		if t.anim == nil {
-			panic("entity: transition is nil")
+			panic("transition: anim is nil")
 		}
 
 		return t.anim

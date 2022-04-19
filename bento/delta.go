@@ -77,7 +77,9 @@ func NewDelta(
 func (d *Delta) Update() {
 	if d.clock.Done() {
 		d.idx = d.limit
-	} else if d.idx < d.limit {
+	}
+
+	if d.idx < (d.limit - 1) {
 		d.idx++
 	}
 

@@ -1,7 +1,6 @@
 package teora
 
 import (
-	"fmt"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -40,7 +39,6 @@ func (i *Intro) Update(stage *bento.Stage) error {
 	}
 
 	if i.scroll.Sprite.(*Scrollbox).Done() && bento.Keypress(confirmKeys) {
-		fmt.Println("intro: changing to start")
 		stage.Change(StartScene)
 	}
 
@@ -52,12 +50,12 @@ func (i *Intro) Draw(screen *ebiten.Image) {
 }
 
 func (i *Intro) Enter() bento.Animation {
-	return nil
+	return anim.NewFade(true, color.Black, 1)
 }
 
 func (i *Intro) Exit() bento.Animation {
 	// TODO: fix buggy scene changing when exit anim is nil
-	//return nil
+	return nil
 
-	return anim.NewFade(false, color.Black, 1)
+	//return anim.NewFade(false, color.Black, 1)
 }
