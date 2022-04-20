@@ -40,7 +40,7 @@ func NewStage(initial Scene, debug *Debug) *Stage {
 func (s *Stage) Change(newScene Scene) {
 	oldScene := s.scene
 
-	log.Printf("stage(%p): changing scene to %p\n", oldScene, newScene)
+	log.Printf("(%p) changing scene to %p\n", oldScene, newScene)
 
 	if oldScene != nil {
 		s.transition.Hide(oldScene.Exit())
@@ -83,7 +83,7 @@ func (s *Stage) Draw(screen *ebiten.Image) {
 
 	// render the scene only if we aren't exiting
 	if s.transition.RenderState() != Exiting {
-		//log.Printf("stage(%p): drawing to snapshot with %v state\n", s.scene, s.transition.RenderState())
+		//log.Printf("(%p) drawing to snapshot with %v state\n", s.scene, s.transition.RenderState())
 		s.snapshot.Clear()
 		s.drawEntities(s.snapshot)
 		s.scene.Draw(s.snapshot)

@@ -24,7 +24,7 @@ func main() {
 	}
 	defer f.Close()
 
-	log.SetFlags(log.Ltime)
+	log.SetFlags(log.Ltime|log.Lshortfile)
 	log.SetOutput(f)
 
 	var dbg *bento.Debug

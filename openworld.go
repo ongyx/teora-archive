@@ -10,6 +10,8 @@ import (
 	"github.com/ongyx/teora/bento/anim"
 )
 
+const pixelScale = 4
+
 var (
 	fgmap = [][]int{
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -65,11 +67,11 @@ func (w *OpenWorld) Draw(screen *ebiten.Image) {
 		w.bg = assets.Demo.Render(bgmap)
 		w.fg = assets.Demo.Render(fgmap)
 
-		// scale to x axis (proportionally).
-		// TODO: maybe move algorithm to bento?
+		// scale to device dpi factor
+		// TODO: move to bento?
 		sw, sh := screen.Size()
 		ww, wh := w.bg.Size()
-		scale := float64(sh) / float64(wh)
+		scale := ebiten.DeviceScaleFactor() * pixelScale
 
 		w.op = &ebiten.DrawImageOptions{}
 		w.op.GeoM.Translate(-float64(ww)/2, -float64(wh)/2)

@@ -24,7 +24,7 @@ func loadTileset(path string, tilesize int) (*bento.Tileset, error) {
 	if img, err := loadSprite(path); err != nil {
 		return nil, err
 	} else {
-		return bento.NewTileset(img, tilesize), nil
+		return bento.NewTileset(img, tilesize, true), nil
 	}
 }
 

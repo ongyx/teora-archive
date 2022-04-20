@@ -19,7 +19,7 @@ func NewTransition() *Transition {
 // Show sets the render state to Visible after rendering an enter animation.
 // If enter is nil, the state is immediately changed.
 func (t *Transition) Show(enter Animation) {
-	log.Printf("transition(%p): setting enter transition to %p\n", t.anim, enter)
+	log.Printf("(%p) entering (anim: %p)\n", t.anim, enter)
 
 	if enter != nil {
 		t.rs = Entering
@@ -34,7 +34,7 @@ func (t *Transition) Show(enter Animation) {
 // Hide sets the render state to Hidden after rendering an exit transition.
 // If exit is nil, the state is immediately changed.
 func (t *Transition) Hide(exit Animation) {
-	log.Printf("transition(%p): setting exit transition to %p\n", t.anim, exit)
+	log.Printf("(%p) exiting (anim: %p)\n", t.anim, exit)
 
 	if exit != nil {
 		t.rs = Exiting
@@ -71,10 +71,10 @@ func (t *Transition) Draw(image *ebiten.Image) {
 			// transition finished, change rendering state
 			switch t.rs {
 			case Entering:
-				log.Printf("transition(%p): enter anim done (Entering -> Visible)\n", t.anim)
+				log.Printf("(%p) entered\n", t.anim)
 				t.rs = Visible
 			case Exiting:
-				log.Printf("transition(%p): exit anim done (Exiting -> Hidden)\n", t.anim)
+				log.Printf("(%p) exited\n", t.anim)
 				t.rs = Hidden
 			default:
 				// this really shouldn't happen.
