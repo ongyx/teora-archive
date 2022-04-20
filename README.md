@@ -8,7 +8,7 @@ NOTE: This project is neither affiliated with nor endorsed by GeoEXE.
 
 Running `make` should build teora without any fuss.
 
-If necessary, you can (re)build teora's assets with `make assets bento`.
+If necessary, you can (re)build teora's assets with `make bootstrap`.
 
 However, it is recommended to build teora in debug mode using `make DEBUG=1` for now.
 Among other things, it adds a TPS counter and builds teora as a console app so logs appear in the console (on Windows).

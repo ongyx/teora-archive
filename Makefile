@@ -27,6 +27,8 @@ windows: export CC = x86_64-w64-mingw32-gcc
 windows:
 	go build -o $(BINARY).exe -tags=$(TAGS) $(WFLAGS) $(MAIN)
 
+bootstrap: assets bento
+
 assets:
 	$(MAKE) -C assets all
 
