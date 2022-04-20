@@ -67,7 +67,7 @@ func (s *Stage) Update() error {
 		// render the enter transition of the new scene
 		s.transition.Show(s.scene.Enter())
 	}
-	
+
 	if err := s.transition.Update(); err != nil {
 		return err
 	}

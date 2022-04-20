@@ -24,7 +24,7 @@ func main() {
 	}
 	defer f.Close()
 
-	log.SetFlags(0)
+	log.SetFlags(log.Ltime)
 	log.SetOutput(f)
 
 	var dbg *bento.Debug
@@ -32,7 +32,7 @@ func main() {
 		dbg = &bento.Debug{Font: assets.Hack}
 	}
 
-	stage := bento.NewStage(teora.IntroScene, dbg)
+	stage := bento.NewStage(teora.NewIntro(), dbg)
 
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowTitle("Teora")

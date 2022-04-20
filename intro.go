@@ -10,12 +10,12 @@ import (
 	"github.com/ongyx/teora/bento/anim"
 )
 
-var (
-	IntroScene bento.Scene
-	IntroMsg   []string
-)
+// Intro is the splash/startup screen.
+type Intro struct {
+	scroll *Scrollbox
+}
 
-func init() {
+func NewIntro() bento.Scene {
 	var s bento.Stream
 	s.Source(func(c chan<- string) {
 		c <- "This project is neither affiliated with nor endorsed by GeoEXE."
@@ -24,17 +24,12 @@ func init() {
 		}
 	})
 
-	IntroScene = &Intro{scroll: NewScrollbox(s, assets.Hack)}
-}
-
-// Intro is the splash/startup screen.
-type Intro struct {
-	scroll *Scrollbox
+	return &Intro{scroll: NewScrollbox(s, assets.Hack)}
 }
 
 func (i *Intro) Update(stage *bento.Stage) error {
 	if i.scroll.Done() && bento.Keypress(confirmKeys) {
-		stage.Change(StartScene)
+		stage.Change(NewStart())
 	}
 
 	return nil
