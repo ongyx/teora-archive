@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	// TODO: add gradient?
+	// TODO(ongyx): add gradient?
 	sbColor = color.NRGBA{250, 250, 250, 255}
 
 	confirmKeys = []ebiten.Key{ebiten.KeyEnter, ebiten.KeySpace}
@@ -43,9 +43,11 @@ func (sba *sbAnim) Draw(img *ebiten.Image) {
 		sba.mask = ebiten.NewImage(img.Size())
 	}
 
+	sba.delta.Update()
+
 	rect := image.Rectangle{
 		Min: sba.rect.Min,
-		Max: sba.rect.Max.Add(sba.delta.Delta()),
+		Max: sba.rect.Max.Add(sba.delta.DeltaPt()),
 	}
 
 	// Draw a stadium on the canvas
@@ -57,8 +59,6 @@ func (sba *sbAnim) Draw(img *ebiten.Image) {
 	sba.vec.Draw(color.Alpha{255}, sba.mask, nil)
 
 	mask(img, sba.mask, nil)
-
-	sba.delta.Update()
 }
 
 func (sba *sbAnim) Done() bool {

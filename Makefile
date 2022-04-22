@@ -15,7 +15,7 @@ endif
 
 .PHONY: all assets bento clean
 
-all: native windows
+all: native
 
 native:
 	go build -o $(BINARY) -tags=$(TAGS) $(MAIN)

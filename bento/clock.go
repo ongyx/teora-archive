@@ -20,7 +20,7 @@ type Clock struct {
 
 // NewClock creates a new clock that triggers every n seconds.
 func NewClock(n float64) *Clock {
-	c := &Clock{}
+	c := newClock()
 	c.Schedule(n)
 
 	return c
@@ -28,10 +28,14 @@ func NewClock(n float64) *Clock {
 
 // NewClockOnce creates a new clock that triggers once after n seconds.
 func NewClockOnce(n float64) *Clock {
-	c := &Clock{}
+	c := newClock()
 	c.ScheduleOnce(n)
 
 	return c
+}
+
+func newClock() *Clock {
+	return &Clock{tick: -1}
 }
 
 // Ticks returns the current ticks of the clock.
@@ -65,8 +69,11 @@ func (c *Clock) ScheduleOnce(n float64) {
 // Done checks if the clock's timer has triggered on the current tick.
 // If the timer was set with ScheduleOnce, this will only return true one time.
 func (c *Clock) Done() bool {
-	// NOTE: clock should not trigger when tick == 0!
-	if c.tick == 0 {
+	switch c.tick {
+	case -1:
+		panic(&InitError{"clock", "invalid tick"})
+	case 0:
+		// NOTE: clock should not trigger when tick == 0!
 		return false
 	}
 

@@ -21,7 +21,7 @@ type Delta struct {
 	delta image.Point
 	clock *Clock
 
-	idx, limit int
+	index, limit int
 
 	dx, dy []float64
 }
@@ -35,7 +35,7 @@ func NewDelta(
 	c := NewClockOnce(period)
 
 	l := c.Limit()
-	// TODO: is there a more efficient way to store the delta per tick?
+	// TODO(ongyx): a more efficient way to store the delta per tick?
 	dx := make([]float64, l)
 	dy := make([]float64, l)
 
@@ -61,44 +61,52 @@ func NewDelta(
 	return &Delta{
 		delta: delta,
 		clock: c,
-		limit: l,
+		index: -1,
+		limit: l - 1,
 		dx:    dx,
 		dy:    dy,
 	}
 }
 
 // Update updates the delta.
-// NOTE: If you're using this in a sprite/transition, only call this _after_ any call of d.Delta()!
 func (d *Delta) Update() {
-	if d.clock.Done() {
-		d.idx = d.limit
-	}
-
-	if d.idx < (d.limit - 1) {
-		d.idx++
-	}
-
 	d.clock.Tick()
+
+	if d.clock.Done() {
+		d.index = d.limit
+	}
+
+	if d.index < d.limit {
+		d.index++
+	}
 }
 
 // Delta returns the current delta.
-func (d *Delta) Delta() image.Point {
-	var x, y float64
+// This will panic if delta has not been updated yet.
+func (d *Delta) Delta() (x, y float64) {
+	if d.index == -1 {
+		panic(&InitError{"delta", "invalid index"})
+	}
 
 	// special case: if x/y delta is 0, return 0 here too
 	// otherwise it will return NaN
 	if d.delta.X != 0 {
-		x = d.dx[d.idx] - 1
+		x = d.dx[d.index] - 1
 	}
 
 	if d.delta.Y != 0 {
-		y = d.dy[d.idx] - 1
+		y = d.dy[d.index] - 1
 	}
 
+	return x, y
+}
+
+func (d *Delta) DeltaPt() image.Point {
+	x, y := d.Delta()
 	return image.Pt(int(x), int(y))
 }
 
 // Done checks if the current delta is equal to the total delta.
 func (d *Delta) Done() bool {
-	return d.idx == d.limit
+	return d.index == d.limit
 }

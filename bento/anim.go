@@ -6,8 +6,8 @@ import (
 
 // Animation is a effect rendered on a scene/sprite.
 type Animation interface {
-	// Update updates the logical state of the animation.
-	Update() error
+	Component
+
 	// Draw renders the animation to the image.
 	Draw(img *ebiten.Image)
 	// Done checks if the animation has finished.

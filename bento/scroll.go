@@ -69,7 +69,9 @@ func (s *Scroll) Size() image.Point {
 
 // Update updates the state of the scroll.
 func (s *Scroll) Update() {
-	if s.clock.Done() && s.tpos != s.tend {
+	s.clock.Tick()
+
+	if s.clock.Done() && s.tpos < s.tend {
 		s.tpos++
 	}
 }
@@ -83,11 +85,9 @@ func (s *Scroll) Draw(
 ) {
 	t := s.text
 
-	if s.tpos != s.tend {
+	if s.tpos < s.tend {
 		t = t[:s.tpos+1]
 	}
-
-	s.clock.Tick()
 
 	s.Font.Draw(t, clr, img, point)
 }

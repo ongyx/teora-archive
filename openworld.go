@@ -68,7 +68,7 @@ func (w *OpenWorld) Draw(screen *ebiten.Image) {
 		w.fg = assets.Demo.Render(fgmap)
 
 		// scale to device dpi factor
-		// TODO: move to bento?
+		// TODO(ongyx): move to bento?
 		sw, sh := screen.Size()
 		ww, wh := w.bg.Size()
 		scale := ebiten.DeviceScaleFactor() * pixelScale

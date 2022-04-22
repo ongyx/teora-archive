@@ -36,15 +36,14 @@ func NewFade(in bool, clr color.Color, duration float64) *Fade {
 }
 
 func (f *Fade) Update() error {
-	d := f.delta.Delta().X
+	f.delta.Update()
+	a, _ := f.delta.Delta()
 
 	if f.in {
-		d = alphaMax - d
+		a = alphaMax - a
 	}
 
-	f.color.A = uint8(d)
-
-	f.delta.Update()
+	f.color.A = uint8(a)
 
 	return nil
 }
