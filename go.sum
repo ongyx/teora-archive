@@ -16,8 +16,8 @@ github.com/jezek/xgb v0.0.0-20210312150743-0e0f116e1240 h1:dy+DS31tGEGCsZzB45HmJ
 github.com/jezek/xgb v0.0.0-20210312150743-0e0f116e1240/go.mod h1:3P4UH/k22rXyHIJD2w4h2XMqPX4Of/eySEZq9L6wqc4=
 github.com/jfreymuth/oggvorbis v1.0.3/go.mod h1:1U4pqWmghcoVsCJJ4fRBKv9peUJMBHixthRlBeD6uII=
 github.com/jfreymuth/vorbis v1.0.2/go.mod h1:DoftRo4AznKnShRl1GxiTFCseHr4zR9BN3TWXyuzrqQ=
-github.com/ongyx/bento v0.0.0-20220423052619-7df40fe8fa10 h1:9ejcMw4VmQRRq1mxb5J1O4JLg0wIox23PZO9blmiJ7M=
-github.com/ongyx/bento v0.0.0-20220423052619-7df40fe8fa10/go.mod h1:cs+ScKvv/leuTI2cyxivBNYltyxLuW+aG9ugOKXo9BY=
+github.com/ongyx/bento v0.1.0 h1:PqHK5SYGDCeS0ARXKUyaEfaFJxzQSkjDO2Vw739yGwI=
+github.com/ongyx/bento v0.1.0/go.mod h1:cs+ScKvv/leuTI2cyxivBNYltyxLuW+aG9ugOKXo9BY=
 github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4/go.mod h1:4OwLy04Bl9Ef3GJJCoec+30X3LQs/0/m4HFRt/2LUSA=
 github.com/silbinarywolf/preferdiscretegpu v1.0.0 h1:tuvXLRCnoFMFyk74/8PFvO0B5rjDmXm0JgNTaOYAHT0=
 github.com/silbinarywolf/preferdiscretegpu v1.0.0/go.mod h1:h3s2GkfAP2sWqoS7v/PxAlFOQ1azMRsZxUJNw47QhLc=
