@@ -13,7 +13,7 @@ else
 	WFLAGS := -ldflags -H=windowsgui
 endif
 
-.PHONY: all assets bento clean
+.PHONY: all bootstrap clean
 
 all: native
 
@@ -27,13 +27,8 @@ windows: export CC = x86_64-w64-mingw32-gcc
 windows:
 	go build -o $(BINARY).exe -tags=$(TAGS) $(WFLAGS) $(MAIN)
 
-bootstrap: assets bento
-
-assets:
+bootstrap:
 	$(MAKE) -C assets all
-
-bento:
-	cd bento && go generate
 
 clean:
 	rm -r $(BUILD)

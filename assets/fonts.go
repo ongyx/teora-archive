@@ -4,7 +4,7 @@ import (
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 
-	"github.com/ongyx/teora/bento"
+	"github.com/ongyx/bento"
 )
 
 var (

@@ -6,7 +6,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/ongyx/teora/bento"
+	"github.com/ongyx/bento"
 )
 
 var (

@@ -8,9 +8,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	_ "github.com/silbinarywolf/preferdiscretegpu"
 
+	"github.com/ongyx/bento"
 	"github.com/ongyx/teora"
 	"github.com/ongyx/teora/assets"
-	"github.com/ongyx/teora/bento"
 )
 
 const (
@@ -24,7 +24,7 @@ func main() {
 	}
 	defer f.Close()
 
-	log.SetFlags(log.Ltime|log.Lshortfile)
+	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetOutput(f)
 
 	var dbg *bento.Debug

@@ -6,8 +6,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"github.com/ongyx/teora/assets"
-	"github.com/ongyx/teora/bento"
-	"github.com/ongyx/teora/bento/anim"
+	"github.com/ongyx/bento"
+	"github.com/ongyx/bento/anim"
 )
 
 // Intro is the splash/startup screen.
