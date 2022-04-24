@@ -5,9 +5,9 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
-	"github.com/ongyx/teora/assets"
 	"github.com/ongyx/bento"
 	"github.com/ongyx/bento/anim"
+	"github.com/ongyx/teora/assets"
 )
 
 // Intro is the splash/startup screen.
@@ -16,13 +16,15 @@ type Intro struct {
 }
 
 func NewIntro() bento.Scene {
-	var s bento.Stream
-	s.Source(func(c chan<- string) {
-		c <- "This project is neither affiliated with nor endorsed by GeoEXE."
+	var s = bento.NewStream[string]()
+
+	go func() {
+		s.Write("This project is neither affiliated with nor endorsed by GeoEXE.")
 		if Debug {
-			c <- "Also, this is a devbuild. There may be a lot of bugs."
+			s.Write("Also, this is a devbuild. There may be a lot of bugs.")
 		}
-	})
+		s.Close()
+	}()
 
 	return &Intro{scroll: NewScrollbox(s, assets.Hack)}
 }

@@ -68,7 +68,7 @@ func (sba *sbAnim) Done() bool {
 // Scrollbox is a box with scrolling text inside.
 type Scrollbox struct {
 	scroll *bento.Scroll
-	stream bento.Stream
+	stream bento.Stream[string]
 
 	anim      *sbAnim
 	canvas    *ebiten.Image
@@ -78,7 +78,7 @@ type Scrollbox struct {
 }
 
 // NewScrollbox creates a new scrollbox from a stream.
-func NewScrollbox(stream bento.Stream, font *bento.Font) *Scrollbox {
+func NewScrollbox(stream bento.Stream[string], font *bento.Font) *Scrollbox {
 	s := bento.NewScroll(font, *stream.Read())
 
 	return &Scrollbox{

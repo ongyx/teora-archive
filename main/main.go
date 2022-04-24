@@ -18,6 +18,7 @@ const (
 )
 
 func main() {
+	// setup logs
 	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		panic(fmt.Sprintf("main: can't open logfile: %v", err))
@@ -27,13 +28,13 @@ func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetOutput(f)
 
-	var dbg *bento.Debug
+	// setup stage
+	stage := bento.NewStage(teora.NewIntro())
 	if teora.Debug {
-		dbg = &bento.Debug{Font: assets.Hack}
+		stage.Op.Font = assets.Hack
 	}
 
-	stage := bento.NewStage(teora.NewIntro(), dbg)
-
+	// run stage
 	ebiten.SetFullscreen(true)
 	ebiten.SetWindowTitle("Teora")
 

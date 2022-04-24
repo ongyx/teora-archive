@@ -1,5 +1,5 @@
 # User-defined variables
-DEBUG := 0
+DEBUG := 1
 
 MAIN := main/main.go
 BUILD := build
