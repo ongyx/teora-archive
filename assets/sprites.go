@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	Demo *bento.Tileset
+	Demo, Arrow *bento.Tileset
 )
 
 func init() {
@@ -17,6 +17,12 @@ func init() {
 		panic(err)
 	} else {
 		Demo = d
+	}
+
+	if a, err := loadTileset("sprites/arrow.png", 16); err != nil {
+		panic(err)
+	} else {
+		Arrow = a
 	}
 }
 

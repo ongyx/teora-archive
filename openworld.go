@@ -1,18 +1,20 @@
 package teora
 
 import (
+	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 
-	"github.com/ongyx/teora/assets"
 	"github.com/ongyx/bento"
 	"github.com/ongyx/bento/anim"
+	"github.com/ongyx/teora/assets"
 )
 
-const pixelScale = 4
-
 var (
+	pixelScale float64
+
 	fgmap = [][]int{
 		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 26, 27, 28, 29, 30, 31, 0, 0, 0, 0},
@@ -30,6 +32,7 @@ var (
 		{0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0},
 		{0, 0, 0, 0, 0, 0, 245, 242, 0, 0, 0, 0, 0, 0},
 	}
+
 	bgmap = [][]int{
 		{243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243},
 		{243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243},
@@ -47,41 +50,47 @@ var (
 		{218, 243, 243, 243, 243, 243, 243, 243, 243, 243, 244, 243, 243, 243},
 		{243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243, 243},
 	}
+
+	arrow = make([]*ebiten.Image, 4)
+
+	arrowKeys = []ebiten.Key{ebiten.KeyArrowUp, ebiten.KeyArrowDown, ebiten.KeyArrowLeft, ebiten.KeyArrowRight}
 )
 
+func init() {
+	// scale to device dpi factor
+	pixelScale = bento.DPIScale(4)
+
+	for i := 0; i < 4; i++ {
+		arrow[i] = assets.Arrow.Tile(i)
+	}
+}
+
 type OpenWorld struct {
-	bg, fg *ebiten.Image
-	op     *ebiten.DrawImageOptions
+	bg, fg *bento.Tilemap
+
+	arrow *bento.Character
 }
 
 func NewOpenWorld() bento.Scene {
-	return &OpenWorld{}
+	return &OpenWorld{
+		bg:    bento.NewTilemap(bgmap, assets.Demo),
+		fg:    bento.NewTilemap(fgmap, assets.Demo),
+		arrow: bento.NewCharacter(arrow[0:1]),
+	}
 }
 
 func (w *OpenWorld) Update(stage *bento.Stage) error {
+	for i, k := range arrowKeys {
+		if inpututil.IsKeyJustPressed(k) {
+			w.arrow.SetFrames(arrow[i : i+1])
+			break
+		}
+	}
+
 	return nil
 }
 
-func (w *OpenWorld) Draw(screen *ebiten.Image) {
-	if w.op == nil {
-		w.bg = assets.Demo.Render(bgmap)
-		w.fg = assets.Demo.Render(fgmap)
-
-		// scale to device dpi factor
-		// TODO(ongyx): move to bento?
-		sw, sh := screen.Size()
-		ww, wh := w.bg.Size()
-		scale := ebiten.DeviceScaleFactor() * pixelScale
-
-		w.op = &ebiten.DrawImageOptions{}
-		w.op.GeoM.Translate(-float64(ww)/2, -float64(wh)/2)
-		w.op.GeoM.Scale(scale, scale)
-		w.op.GeoM.Translate(float64(sw)/2, float64(sh)/2)
-	}
-
-	screen.DrawImage(w.bg, w.op)
-	screen.DrawImage(w.fg, w.op)
-}
+func (w *OpenWorld) Draw(screen *ebiten.Image) {}
 
 func (w *OpenWorld) Enter() bento.Animation {
 	return anim.NewFade(true, color.Black, 0.5)
@@ -92,5 +101,20 @@ func (w *OpenWorld) Exit() bento.Animation {
 }
 
 func (w *OpenWorld) Entities() []*bento.Entity {
-	return nil
+	es := bento.NewEntities(w.bg, w.fg, w.arrow)
+	for _, e := range es {
+		e.Closure = center
+	}
+
+	return es
+}
+
+func center(img *ebiten.Image, entity *bento.Entity, size image.Point) {
+	g := bento.Geometry{}
+	g.Align(bento.Center, img.Bounds().Size())
+	g.Scale(pixelScale)
+	g.Translate(bento.Center.Point(image.Rectangle{Max: size}))
+
+	entity.Op.GeoM = g.M
+	entity.Show(nil)
 }
