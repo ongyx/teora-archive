@@ -1,7 +1,6 @@
 package teora
 
 import (
-	"image"
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -66,23 +65,30 @@ func init() {
 }
 
 type OpenWorld struct {
-	bg, fg *bento.Tilemap
+	bg, fg *ebiten.Image
 
-	arrow *bento.Character
+	arrow *bento.Entity
+	init  bool
 }
 
 func NewOpenWorld() bento.Scene {
 	return &OpenWorld{
-		bg:    bento.NewTilemap(bgmap, assets.Demo),
-		fg:    bento.NewTilemap(fgmap, assets.Demo),
-		arrow: bento.NewCharacter(arrow[0:1]),
+		bg:    assets.Demo.Render(bgmap),
+		fg:    assets.Demo.Render(fgmap),
+		arrow: bento.NewEntity(bento.NewCharacter(arrow[0:1])),
 	}
 }
 
 func (w *OpenWorld) Update(stage *bento.Stage) error {
+	a := w.arrow.Sprite.(*bento.Character)
+
+	if err := w.arrow.Update(); err != nil {
+		return err
+	}
+
 	for i, k := range arrowKeys {
 		if inpututil.IsKeyJustPressed(k) {
-			w.arrow.SetFrames(arrow[i : i+1])
+			a.SetFrames(arrow[i : i+1])
 			break
 		}
 	}
@@ -90,7 +96,21 @@ func (w *OpenWorld) Update(stage *bento.Stage) error {
 	return nil
 }
 
-func (w *OpenWorld) Draw(screen *ebiten.Image) {}
+func (w *OpenWorld) Draw(screen *ebiten.Image) {
+	a := w.arrow.Sprite.(*bento.Character)
+
+	if !w.init {
+		a.Position = bento.Center.Point(screen.Bounds())
+		a.Align = bento.Center
+		a.Scale = pixelScale
+
+		w.init = true
+	}
+
+	screen.DrawImage(w.bg, nil)
+	screen.DrawImage(w.fg, nil)
+	w.arrow.Draw(screen)
+}
 
 func (w *OpenWorld) Enter() bento.Animation {
 	return anim.NewFade(true, color.Black, 0.5)
@@ -98,23 +118,4 @@ func (w *OpenWorld) Enter() bento.Animation {
 
 func (w *OpenWorld) Exit() bento.Animation {
 	return anim.NewFade(false, color.Black, 0.5)
-}
-
-func (w *OpenWorld) Entities() []*bento.Entity {
-	es := bento.NewEntities(w.bg, w.fg, w.arrow)
-	for _, e := range es {
-		e.Closure = center
-	}
-
-	return es
-}
-
-func center(img *ebiten.Image, entity *bento.Entity, size image.Point) {
-	g := bento.Geometry{}
-	g.Align(bento.Center, img.Bounds().Size())
-	g.Scale(pixelScale)
-	g.Translate(bento.Center.Point(image.Rectangle{Max: size}))
-
-	entity.Op.GeoM = g.M
-	entity.Show(nil)
 }

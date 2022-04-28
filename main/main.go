@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
+	//"runtime"
+	//"runtime/pprof"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	_ "github.com/silbinarywolf/preferdiscretegpu"
@@ -15,24 +16,46 @@ import (
 
 const (
 	logfile = "log.txt"
+	//cpuprof = "cpu.prof"
+	//memprof = "mem.prof"
 )
 
 func main() {
 	// setup logs
-	f, err := os.OpenFile(logfile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
-	if err != nil {
-		panic(fmt.Sprintf("main: can't open logfile: %v", err))
-	}
-	defer f.Close()
+	if f, err := os.Create(logfile); err != nil {
+		log.Fatal("can't create log: ", err)
+	} else {
+		defer f.Close()
 
-	log.SetFlags(log.Ltime | log.Lshortfile)
-	log.SetOutput(f)
+		log.SetFlags(log.Ltime | log.Lshortfile)
+		log.SetOutput(f)
+	}
+
+	/*
+		// setup pprof
+		if f, err := os.Create(cpuprof); err != nil {
+			log.Fatal("can't create cpu profile: ", err)
+		} else {
+			defer f.Close()
+
+			if err := pprof.StartCPUProfile(f); err != nil {
+				log.Fatal("can't start cpu profile: ", err)
+			} else {
+				defer pprof.StopCPUProfile()
+			}
+		}
+	*/
 
 	// setup stage
-	stage := bento.NewStage(teora.NewIntro())
+	var op bento.StageOptions
+
+	op.HiDPI = true
 	if teora.Debug {
-		stage.Op.Font = assets.Hack
+		op.Font = assets.Hack
 	}
+
+	stage := bento.NewStage(teora.NewIntro())
+	stage.Op = op
 
 	// run stage
 	ebiten.SetFullscreen(true)
@@ -41,4 +64,16 @@ func main() {
 	if err := ebiten.RunGame(stage); err != nil {
 		log.Fatal(err)
 	}
+
+	/*
+		if f, err := os.Create(memprof); err != nil {
+			log.Fatal("could not create memory profile: ", err)
+		} else {
+			defer f.Close()
+			runtime.GC()
+			if err := pprof.WriteHeapProfile(f); err != nil {
+				log.Fatal("could not write memory profile: ", err)
+			}
+		}
+	*/
 }

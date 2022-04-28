@@ -8,6 +8,8 @@ import (
 )
 
 var (
+	dpi = bento.DPIScale(96)
+
 	Hack   = &bento.Font{}
 	Teoran = &bento.Font{}
 )
@@ -17,7 +19,7 @@ func init() {
 		"fonts/hack.ttf",
 		Hack,
 		&opentype.FaceOptions{
-			Size:    20,
+			Size:    12,
 			DPI:     dpi,
 			Hinting: font.HintingFull,
 		},
@@ -29,7 +31,7 @@ func init() {
 		"fonts/teoran.ttf",
 		Teoran,
 		&opentype.FaceOptions{
-			Size:    48,
+			Size:    24,
 			DPI:     dpi,
 			Hinting: font.HintingFull,
 		},

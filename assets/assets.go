@@ -5,10 +5,6 @@ import (
 	"embed"
 )
 
-const (
-	dpi = 72
-)
-
 var (
 	//go:embed fonts/*.ttf
 	//go:embed shaders/*.go
