@@ -15,6 +15,10 @@ Among other things, it adds a TPS counter and builds teora as a console app so l
 
 CGo is required, but cross-compiling from Linux to Windows works out of the box; specify the `windows` Make target to compile for 64-bit Windows.
 
+## Notes
+
+Teora uses the experimental [Bento] game engine, and therefore things may break at any time.
+
 ## Credits
 
 GeoEXE for creating Gwain Saga in the first place.
@@ -25,4 +29,5 @@ The following external resources are vendorised:
 
 [GeoEXE]: https://www.youtube.com/c/geoexeofficial
 [Gwain Saga]: https://youtube.com/playlist?list=PLtVNv5LHqiUMkdxa0eFlpZJEKxhyBzzr1
+[Bento]: https://github.com/ongyx/bento
 [Hack]: https://github.com/source-foundry/Hack

@@ -1,5 +1,5 @@
 //go:build !debug
 
-package teora
+package main
 
 const Debug = false

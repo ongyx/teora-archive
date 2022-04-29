@@ -1,4 +1,4 @@
-package teora
+package main
 
 import (
 	"image"

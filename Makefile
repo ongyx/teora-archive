@@ -1,16 +1,20 @@
 # User-defined variables
 DEBUG := 1
+PPROF := 0
 
-MAIN := main/main.go
 BUILD := build
 BINARY := $(BUILD)/teora
 TAGS :=
 WFLAGS :=
 
-ifneq ($(DEBUG),0)
-	TAGS := debug #ebitendebug
+ifeq ($(DEBUG),1)
+	TAGS := debug
 else
 	WFLAGS := -ldflags -H=windowsgui
+endif
+
+ifeq ($(PPROF),1)
+	TAGS := $(TAGS),pprof
 endif
 
 .PHONY: all bootstrap clean
@@ -18,14 +22,14 @@ endif
 all: native
 
 native:
-	go build -o $(BINARY) -tags=$(TAGS) $(MAIN)
+	go build -tags=$(TAGS) -o $(BINARY)
 
 windows: export GOOS = windows
 windows: export GOARCH = amd64
 windows: export CGO_ENABLED = 1
 windows: export CC = x86_64-w64-mingw32-gcc
 windows:
-	go build -o $(BINARY).exe -tags=$(TAGS) $(WFLAGS) $(MAIN)
+	go build -tags=$(TAGS) $(WFLAGS) -o $(BINARY).exe	
 
 bootstrap:
 	$(MAKE) -C assets all

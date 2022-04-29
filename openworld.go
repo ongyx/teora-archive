@@ -1,4 +1,4 @@
-package teora
+package main
 
 import (
 	"image/color"
@@ -66,9 +66,9 @@ func init() {
 
 type OpenWorld struct {
 	bg, fg *ebiten.Image
+	op     *ebiten.DrawImageOptions
 
 	arrow *bento.Entity
-	init  bool
 }
 
 func NewOpenWorld() bento.Scene {
@@ -99,16 +99,23 @@ func (w *OpenWorld) Update(stage *bento.Stage) error {
 func (w *OpenWorld) Draw(screen *ebiten.Image) {
 	a := w.arrow.Sprite.(*bento.Character)
 
-	if !w.init {
-		a.Position = bento.Center.Point(screen.Bounds())
+	if w.op == nil {
+		c := bento.Center.Point(screen)
+
+		g := bento.Geometry{}
+		g.Align(bento.Center, w.bg.Bounds().Size())
+		g.Scale(pixelScale)
+		g.Translate(c)
+		w.op = &ebiten.DrawImageOptions{GeoM: g.M}
+
 		a.Align = bento.Center
 		a.Scale = pixelScale
-
-		w.init = true
+		a.Position = c
+		w.arrow.Show(nil)
 	}
 
-	screen.DrawImage(w.bg, nil)
-	screen.DrawImage(w.fg, nil)
+	screen.DrawImage(w.bg, w.op)
+	screen.DrawImage(w.fg, w.op)
 	w.arrow.Draw(screen)
 }
 
