@@ -1,39 +1,37 @@
-# User-defined variables
-DEBUG := 1
-PPROF := 0
+## 
+## These variables can be set to customise building teora:
+## * BINARY: The path to the built binary.
+## * TAGS: The tags to use to build teora:
+## 	* debug: Enable debug mode.
+## 	* pprof: Start a live pprof server for profiling.
+## * FLAGS: Flags to pass to the 'go build' command.
+## 
 
-BUILD := build
-BINARY := $(BUILD)/teora
+BINARY := build/teora
 TAGS :=
-WFLAGS :=
+FLAGS :=
 
-ifeq ($(DEBUG),1)
-	TAGS := debug
-else
-	WFLAGS := -ldflags -H=windowsgui
-endif
+.PHONY: bootstrap clean
 
-ifeq ($(PPROF),1)
-	TAGS := $(TAGS),pprof
-endif
+help:       ## Show this help.
+	@sed -ne '/@sed/!s/## //p' $(MAKEFILE_LIST)
 
-.PHONY: all bootstrap clean
-
-all: native
-
-native:
+native:     ## Build teora as a native binary.
 	go build -tags=$(TAGS) -o $(BINARY)
 
-windows: export GOOS = windows
-windows: export GOARCH = amd64
-windows: export CGO_ENABLED = 1
-windows: export CC = x86_64-w64-mingw32-gcc
-windows:
-	go build -tags=$(TAGS) $(WFLAGS) -o $(BINARY).exe	
+windows: export GOOS := windows
+windows: export GOARCH := amd64
+windows: export CGO_ENABLED := 1
+windows: export CC := x86_64-w64-mingw32-gcc
+windows:    ## Build teora as a Windows console app.
+	go build -tags=$(TAGS) $(FLAGS) -o $(BINARY).exe
 
-bootstrap:
+windowsgui: export FLAGS := $(FLAGS) -ldflags -H=windowsgui
+windowsgui: windows
+windowsgui: ## Build teora as a Windows GUI app.
+
+bootstrap:  ## Build teora's assets.
 	$(MAKE) -C assets all
 
-clean:
-	rm -r $(BUILD)
+clean:      ## Cleanup temporary/built files.
 	$(MAKE) -C assets clean

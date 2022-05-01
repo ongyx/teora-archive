@@ -82,15 +82,15 @@ func NewOpenWorld() bento.Scene {
 func (w *OpenWorld) Update(stage *bento.Stage) error {
 	a := w.arrow.Sprite.(*bento.Character)
 
-	if err := w.arrow.Update(); err != nil {
-		return err
-	}
-
 	for i, k := range arrowKeys {
 		if inpututil.IsKeyJustPressed(k) {
 			a.SetFrames(arrow[i : i+1])
 			break
 		}
+	}
+
+	if err := w.arrow.Update(); err != nil {
+		return err
 	}
 
 	return nil

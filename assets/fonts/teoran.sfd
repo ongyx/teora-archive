@@ -4,7 +4,7 @@ FullName: Teoran Standard
 FamilyName: Teoran
 Weight: Regular
 Copyright: Copyright (c) 2022, Unknown
-UComments: "2022-4-29: Created with FontForge (http://fontforge.org)"
+UComments: "2022-5-1: Created with FontForge (http://fontforge.org)"
 Version: 001.000
 ItalicAngle: 0
 UnderlinePosition: -100
@@ -15,14 +15,14 @@ InvalidEm: 0
 LayerCount: 2
 Layer: 0 0 "Back" 1
 Layer: 1 0 "Fore" 0
-XUID: [1021 808 -1046491817 8881972]
+XUID: [1021 494 -2140856152 852141]
 StyleMap: 0x0000
 FSType: 0
 OS2Version: 0
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 1
-CreationTime: 1651213113
-ModificationTime: 1651213113
+CreationTime: 1651382710
+ModificationTime: 1651382710
 OS2TypoAscent: 0
 OS2TypoAOffset: 1
 OS2TypoDescent: 0
